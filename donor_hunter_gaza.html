@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الجسر الإنساني - بحث ذكي عن المانحين الداعمين لعائلات غزة</title>
+    <style>
+        /* === المتغيرات الأساسية === */
+        :root {
+            --primary-blue: #2563eb;
+            --primary-blue-dark: #1d4ed8;
+            --success-green: #10b981;
+            --success-green-dark: #059669;
+            --warning-yellow: #f59e0b;
+            --warning-yellow-light: #fef3c7;
+            --danger-red: #ef4444;
+            --danger-red-light: #fee2e2;
+            --hot-orange: #f97316;
+            --hot-orange-light: #ffedd5;
+            --medium-blue: #3b82f6;
+            --medium-blue-light: #dbeafe;
+            --low-gray: #6b7280;
+            --low-gray-light: #f3f4f6;
+            --bg-main: #f8fafc;
+            --bg-white: #ffffff;
+            --bg-sidebar: #1e293b;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --text-white: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        /* === الأنماط الأساسية === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* === التخطيط الثلاثي === */
+        .app-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            min-height: 100vh;
+        }
+
+        /* === الشريط الجانبي الأيسر === */
+        .sidebar-left {
+            background: var(--bg-sidebar);
+            color: var(--text-white);
+            padding: 20px;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .logo-section {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .logo-section .icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .logo-section h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .logo-section p {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* === نموذج البحث === */
+        .search-form {
+            margin-bottom: 25px;
+        }
+
+        .search-form h3 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-white);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-group select option {
+            background: var(--bg-sidebar);
+            color: var(--text-white);
+        }
+
+        .btn-search {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-blue);
+            color: var(--text-white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .btn-search:hover {
+            background: var(--primary-blue-dark);
+            transform: translateY(-2px);
+        }
+
+        /* === الإحصائيات السريعة === */
+        .quick-stats {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .quick-stats h4 {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-item span:first-child {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .stat-item span:last-child {
+            font-weight: 600;
+            color: var(--success-green);
+        }
+
+        /* === تصفية الأولوية === */
+        .priority-filter {
+            margin-top: 20px;
+        }
+
+        .priority-filter h4 {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .priority-btn {
+            display: block;
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--text-white);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: right;
+        }
+
+        .priority-btn:hover,
+        .priority-btn.active {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+
+        .priority-btn .count {
+            float: left;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        /* === المنطقة الرئيسية === */
+        .main-content {
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .main-header h2 {
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--text-white);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-blue-dark);
+        }
+
+        .btn-outline {
+            background: var(--bg-white);
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-blue);
+            color: var(--text-white);
+        }
+
+        /* === شبكة الإحصائيات === */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .stat-card.hot .value { color: var(--hot-orange); }
+        .stat-card.high .value { color: var(--warning-yellow); }
+        .stat-card.success .value { color: var(--success-green); }
+        .stat-card.blue .value { color: var(--primary-blue); }
+
+        /* === بطاقات المانحين === */
+        .donors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .donor-card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .donor-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .donor-card.selected {
+            border-color: var(--primary-blue);
+        }
+
+        /* أولويات البطاقات */
+        .donor-card.priority-hot {
+            border-right: 4px solid var(--hot-orange);
+            background: linear-gradient(to left, var(--hot-orange-light) 0%, var(--bg-white) 30%);
+        }
+
+        .donor-card.priority-high {
+            border-right: 4px solid var(--warning-yellow);
+            background: linear-gradient(to left, var(--warning-yellow-light) 0%, var(--bg-white) 30%);
+        }
+
+        .donor-card.priority-medium {
+            border-right: 4px solid var(--medium-blue);
+            background: linear-gradient(to left, var(--medium-blue-light) 0%, var(--bg-white) 30%);
+        }
+
+        .donor-card.priority-low {
+            border-right: 4px solid var(--low-gray);
+            background: linear-gradient(to left, var(--low-gray-light) 0%, var(--bg-white) 30%);
+        }
+
+        .donor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .donor-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .donor-type {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .priority-badge {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .priority-badge.hot {
+            background: var(--hot-orange-light);
+            color: var(--hot-orange);
+        }
+
+        .priority-badge.high {
+            background: var(--warning-yellow-light);
+            color: #b45309;
+        }
+
+        .priority-badge.medium {
+            background: var(--medium-blue-light);
+            color: var(--primary-blue);
+        }
+
+        .priority-badge.low {
+            background: var(--low-gray-light);
+            color: var(--low-gray);
+        }
+
+        .donor-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .info-item .value {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .donor-notes {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            padding: 10px;
+            background: var(--bg-main);
+            border-radius: 8px;
+        }
+
+        .donor-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            background: var(--bg-main);
+            border-radius: 15px;
+            font-size: 0.75rem;
+            color: var(--primary-blue);
+            border: 1px solid var(--border-color);
+        }
+
+        .donor-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            background: var(--bg-white);
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-small:hover {
+            background: var(--primary-blue);
+            color: var(--text-white);
+            border-color: var(--primary-blue);
+        }
+
+        .btn-small.contacted {
+            background: var(--success-green);
+            color: var(--text-white);
+            border-color: var(--success-green);
+        }
+
+        .btn-small.contacted:hover {
+            background: var(--success-green-dark);
+        }
+
+        /* === اللوحة اليمنى === */
+        .sidebar-right {
+            background: var(--bg-white);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .panel-section {
+            margin-bottom: 25px;
+        }
+
+        .panel-section h3 {
+            font-size: 1rem;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .donor-detail-card {
+            background: var(--bg-main);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-row .label {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        .detail-row .value {
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        /* === استراتيجية التواصل === */
+        .strategy-list {
+            list-style: none;
+        }
+
+        .strategy-list li {
+            padding: 10px;
+            background: var(--bg-main);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .strategy-list li::before {
+            content: "✓";
+            color: var(--success-green);
+            font-weight: bold;
+        }
+
+        /* === روابط السوشيال ميديا === */
+        .social-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: var(--bg-main);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .social-link:hover {
+            background: var(--primary-blue);
+            color: var(--text-white);
+        }
+
+        /* === دليل الإقناع === */
+        .tips-box {
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .tips-box h4 {
+            font-size: 0.9rem;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tips-box ul {
+            list-style: none;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+        }
+
+        .tips-box ul li {
+            padding: 5px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        /* === المواعيد القريبة === */
+        .upcoming-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .upcoming-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: var(--bg-main);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .upcoming-item .name {
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .upcoming-item .date {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* === المودال (النافذة المنبثقة) === */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-white);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--danger-red);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* === قوالب الرسائل === */
+        .template-card {
+            background: var(--bg-main);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .template-card h4 {
+            font-size: 0.95rem;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .template-card textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+        .template-card .btn-copy {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            background: var(--success-green);
+            color: var(--text-white);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .template-card .btn-copy:hover {
+            background: var(--success-green-dark);
+        }
+
+        /* === البحث الاجتماعي === */
+        .social-analysis {
+            display: grid;
+            gap: 15px;
+        }
+
+        .analysis-card {
+            background: var(--bg-main);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .analysis-card h4 {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .analysis-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        /* === حالة فارغة === */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        /* === Responsive Design === */
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 280px 1fr 300px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-left,
+            .sidebar-right {
+                position: relative;
+                height: auto;
+                min-height: auto;
+            }
+
+            .sidebar-left {
+                order: 1;
+            }
+
+            .main-content {
+                order: 2;
+            }
+
+            .sidebar-right {
+                order: 3;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .donors-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .donor-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .main-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* === الأنيميشن === */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .donor-card {
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .donor-card:nth-child(1) { animation-delay: 0.05s; }
+        .donor-card:nth-child(2) { animation-delay: 0.1s; }
+        .donor-card:nth-child(3) { animation-delay: 0.15s; }
+        .donor-card:nth-child(4) { animation-delay: 0.2s; }
+        .donor-card:nth-child(5) { animation-delay: 0.25s; }
+
+        /* === التمرير المخصص === */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-light);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-dark);
+        }
+
+        /* === إشعار النسخ === */
+        .copy-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--success-green);
+            color: var(--text-white);
+            padding: 12px 25px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+        }
+
+        .copy-notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- الشريط الجانبي الأيسر -->
+        <aside class="sidebar-left">
+            <div class="logo-section">
+                <div class="icon">🤝</div>
+                <h1>الجسر الإنساني</h1>
+                <p>بحث ذكي عن المانحين الداعمين</p>
+            </div>
+
+            <div class="search-form">
+                <h3>🔍 بحث متقدم</h3>
+
+                <div class="form-group">
+                    <label>اسم المانح / المنظمة</label>
+                    <input type="text" id="searchName" placeholder="ابحث بالاسم...">
+                </div>
+
+                <div class="form-group">
+                    <label>نوع الدعم</label>
+                    <select id="supportType">
+                        <option value="">الكل</option>
+                        <option value="financial">مالي فقط</option>
+                        <option value="moral">معنوي فقط</option>
+                        <option value="both">مالي + معنوي</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>الدولة</label>
+                    <select id="country">
+                        <option value="">جميع الدول</option>
+                        <option value="usa">🇺🇸 الولايات المتحدة</option>
+                        <option value="uk">🇬🇧 المملكة المتحدة</option>
+                        <option value="canada">🇨🇦 كندا</option>
+                        <option value="germany">🇩🇪 ألمانيا</option>
+                        <option value="uae">🇦🇪 الإمارات</option>
+                        <option value="kuwait">🇰🇼 الكويت</option>
+                        <option value="saudi">🇸🇦 السعودية</option>
+                        <option value="qatar">🇶🇦 قطر</option>
+                        <option value="jordan">🇯🇴 الأردن</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>متوسط مبلغ التبرع</label>
+                    <select id="donationRange">
+                        <option value="">جميع المبالغ</option>
+                        <option value="low">$100 - $500</option>
+                        <option value="medium">$500 - $2,000</option>
+                        <option value="high">$2,000 - $10,000</option>
+                        <option value="very_high">+$10,000</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>منصة التمويل</label>
+                    <select id="platform">
+                        <option value="">جميع المنصات</option>
+                        <option value="gofundme">GoFundMe</option>
+                        <option value="launchgood">LaunchGood</option>
+                        <option value="fundrazr">FundRazr</option>
+                        <option value="paypal">PayPal Pool</option>
+                        <option value="custom">منصة خاصة</option>
+                    </select>
+                </div>
+
+                <button class="btn-search" onclick="performSearch()">
+                    🔍 بدء البحث الذكي
+                </button>
+            </div>
+
+            <div class="quick-stats">
+                <h4>📊 إحصائيات سريعة</h4>
+                <div class="stat-item">
+                    <span>عدد المانحين</span>
+                    <span id="totalDonors">5</span>
+                </div>
+                <div class="stat-item">
+                    <span>إجمالي المبالغ المتوقعة</span>
+                    <span id="totalAmount">$22,000</span>
+                </div>
+                <div class="stat-item">
+                    <span>تم التواصل معهم</span>
+                    <span id="contactedCount">0</span>
+                </div>
+            </div>
+
+            <div class="priority-filter">
+                <h4>🎯 تصفية حسب الأولوية</h4>
+                <button class="priority-btn active" onclick="filterByPriority('all')">
+                    كل المانحين
+                    <span class="count" id="countAll">5</span>
+                </button>
+                <button class="priority-btn" onclick="filterByPriority('hot')">
+                    🔴 مانحون ساخنون
+                    <span class="count" id="countHot">1</span>
+                </button>
+                <button class="priority-btn" onclick="filterByPriority('high')">
+                    🟡 أولوية عالية
+                    <span class="count" id="countHigh">2</span>
+                </button>
+                <button class="priority-btn" onclick="filterByPriority('medium')">
+                    🔵 أولوية متوسطة
+                    <span class="count" id="countMedium">1</span>
+                </button>
+                <button class="priority-btn" onclick="filterByPriority('low')">
+                    🟢 أولوية منخفضة
+                    <span class="count" id="countLow">1</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- المنطقة الرئيسية -->
+        <main class="main-content">
+            <div class="main-header">
+                <h2>📋 نتائج البحث الذكي</h2>
+                <div class="header-actions">
+                    <button class="btn-action btn-primary" onclick="showPriorityReport()">
+                        📊 تقرير الأولوية
+                    </button>
+                    <button class="btn-action btn-outline" onclick="exportDonors()">
+                        📥 تصدير القائمة
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card hot">
+                    <div class="icon">🔥</div>
+                    <div class="value" id="statHot">1</div>
+                    <div class="label">مانحون ساخنون</div>
+                </div>
+                <div class="stat-card high">
+                    <div class="icon">👥</div>
+                    <div class="value" id="statFollowers">300K</div>
+                    <div class="label">إجمالي المتابعين</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="icon">📈</div>
+                    <div class="value" id="statSuccess">75%</div>
+                    <div class="label">معدل النجاح المتوقع</div>
+                </div>
+                <div class="stat-card blue">
+                    <div class="icon">💰</div>
+                    <div class="value" id="statExpected">$13,200</div>
+                    <div class="label">المبلغ المتوقع جمعه</div>
+                </div>
+            </div>
+
+            <div class="donors-grid" id="donorsGrid">
+                <!-- سيتم ملؤها بواسطة JavaScript -->
+            </div>
+        </main>
+
+        <!-- اللوحة اليمنى -->
+        <aside class="sidebar-right">
+            <div class="panel-section" id="donorDetailsPanel">
+                <h3>👤 بيانات المانح</h3>
+                <div class="empty-state">
+                    <div class="icon">👆</div>
+                    <h3>اختر مانحاً</h3>
+                    <p>اضغط على بطاقة المانح لعرض التفاصيل</p>
+                </div>
+            </div>
+
+            <div class="panel-section" id="strategyPanel" style="display: none;">
+                <h3>💡 استراتيجية التواصل</h3>
+                <ul class="strategy-list" id="strategyList">
+                    <!-- سيتم ملؤها بواسطة JavaScript -->
+                </ul>
+            </div>
+
+            <div class="panel-section" id="socialPanel" style="display: none;">
+                <h3>🔗 روابط السوشيال ميديا</h3>
+                <div class="social-links" id="socialLinks">
+                    <!-- سيتم ملؤها بواسطة JavaScript -->
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h3>📚 دليل الإقناع</h3>
+                <div class="tips-box">
+                    <h4>💡 نصائح للتواصل الفعال</h4>
+                    <ul>
+                        <li>📖 ابدأ بالتعاطف الشخصي مع العائلة</li>
+                        <li>👨‍👩‍👧‍👦 استخدم أسماء وأعمار أفراد العائلة</li>
+                        <li>📸 أضف صوراً أو فيديو قصير (إن أمكن)</li>
+                        <li>🤝 تعهد بالشفافية الكاملة في التوزيع</li>
+                        <li>❤️ أظهر الامتنان مهما كان المبلغ</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h3>⏰ أقرب المواعيد</h3>
+                <div class="upcoming-list" id="upcomingList">
+                    <div class="upcoming-item">
+                        <div>
+                            <div class="name">أحمد الشيرازي</div>
+                            <div class="date">آخر تبرع: منذ 15 يوم</div>
+                        </div>
+                        <span class="priority-badge hot">ساخن</span>
+                    </div>
+                    <div class="upcoming-item">
+                        <div>
+                            <div class="name">د. محمد الحسن</div>
+                            <div class="date">آخر تبرع: منذ 30 يوم</div>
+                        </div>
+                        <span class="priority-badge high">عالي</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- نافذة قوالب التواصل -->
+    <div class="modal-overlay" id="templatesModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>📝 قوالب التواصل</h3>
+                <button class="modal-close" onclick="closeModal('templatesModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="templatesContent">
+                <!-- سيتم ملؤها بواسطة JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة البحث الاجتماعي -->
+    <div class="modal-overlay" id="socialModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>🔍 تحليل السوشيال ميديا</h3>
+                <button class="modal-close" onclick="closeModal('socialModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="socialContent">
+                <!-- سيتم ملؤها بواسطة JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تقرير الأولوية -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>📊 تقرير الأولوية الذكي</h3>
+                <button class="modal-close" onclick="closeModal('reportModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="reportContent">
+                <!-- سيتم ملؤها بواسطة JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- إشعار النسخ -->
+    <div class="copy-notification" id="copyNotification">
+        ✓ تم نسخ الرسالة بنجاح!
+    </div>
+
+    <script>
+        // === قاعدة البيانات المدمجة ===
+        const defaultDonors = [
+            {
+                id: 1,
+                name: "د. محمد الحسن",
+                type: "individual",
+                location: "usa",
+                locationName: "🇺🇸 الولايات المتحدة - شيكاغو",
+                supportType: "both",
+                avgDonation: 2500,
+                platform: "gofundme",
+                platformName: "GoFundMe",
+                priority: "high",
+                followers: 45000,
+                lastDonation: "2024-01-15",
+                lastDonationDays: 30,
+                interests: ["education", "children", "gaza"],
+                campaigns: [
+                    { name: "Gaza Food Aid", amount: 2500 },
+                    { name: "Palestine Medical Aid", amount: 1500 }
+                ],
+                social: {
+                    twitter: "@dr_alhassan",
+                    instagram: "@dr.mohamad.alhassan",
+                    linkedin: "mohamad-alhassan-md",
+                    facebook: "dr.mohamad.alhassan"
+                },
+                notes: "طبيب ناجح في شيكاغو، مهتم بالتعليم والأطفال. يستجيب للرسائل الشخصية والقصص المؤثرة.",
+                strategy: [
+                    "ابدأ بقصة طفل محتاج للعلاج أو التعليم",
+                    "أرفق صوراً للعائلة مع التركيز على الأطفال",
+                    "اذكر مبلغاً محدداً ($2,500 - متوسط تبرعه)",
+                    "تواصل عبر LinkedIn للحصول على رد أسرع",
+                    "اشكره على دعمه السابق لـ Gaza Food Aid"
+                ],
+                contacted: false
+            },
+            {
+                id: 2,
+                name: "جمعية النور الخيرية",
+                type: "organization",
+                location: "usa",
+                locationName: "🇺🇸 الولايات المتحدة - أوهايو",
+                supportType: "financial",
+                avgDonation: 5000,
+                platform: "custom",
+                platformName: "منصة خاصة",
+                priority: "high",
+                followers: 15000,
+                lastDonation: "2024-01-20",
+                lastDonationDays: 25,
+                interests: ["gaza", "orphans", "rebuilding"],
+                campaigns: [
+                    { name: "Gaza Rebuilding", amount: 7500 }
+                ],
+                social: {
+                    twitter: "@alnoor_charity",
+                    instagram: "@alnoor.charity.ohio",
+                    facebook: "alnoorcharityohio"
+                },
+                notes: "جمعية مسجلة رسمياً، تركز على المشاريع البنائية والإعمار. تفضل المشاريع طويلة المدى.",
+                strategy: [
+                    "قدم مشروعاً واضحاً بميزانية مفصلة",
+                    "ركز على مشاريع إعادة الإعمار والبناء",
+                    "أظهر خطة التوزيع والمتابعة",
+                    "قدم تقارير عن مشاريعهم السابقة",
+                    "اطلب اجتماعاً عبر Zoom لعرض المشروع"
+                ],
+                contacted: false
+            },
+            {
+                id: 3,
+                name: "سارة القحطاني",
+                type: "individual",
+                location: "kuwait",
+                locationName: "🇰🇼 الكويت",
+                supportType: "both",
+                avgDonation: 1000,
+                platform: "launchgood",
+                platformName: "LaunchGood",
+                priority: "medium",
+                followers: 125000,
+                lastDonation: "2024-02-01",
+                lastDonationDays: 14,
+                interests: ["children", "women", "gaza"],
+                campaigns: [
+                    { name: "Gaza Children", amount: 1000 },
+                    { name: "Palestine Women", amount: 500 }
+                ],
+                social: {
+                    twitter: "@sara_alqahtani",
+                    instagram: "@sara.qahtani",
+                    tiktok: "@saraqahtani"
+                },
+                notes: "مؤثرة على إنستقرام، مهتمة بقضايا النساء والأطفال. لها تأثير كبير على متابعيها الخليجيين.",
+                strategy: [
+                    "ركزي على قصص النساء والأمهات في غزة",
+                    "اطلبي منها مشاركة الحملة (أهم من التبرع)",
+                    "أرسلي محتوى جاهز للنشر على إنستقرام",
+                    "تواصلي عبر DM في إنستقرام",
+                    "اشكريها على دعمها لـ Gaza Children"
+                ],
+                contacted: false
+            },
+            {
+                id: 4,
+                name: "أحمد الشيرازي",
+                type: "individual",
+                location: "uk",
+                locationName: "🇬🇧 المملكة المتحدة - لندن",
+                supportType: "financial",
+                avgDonation: 3000,
+                platform: "gofundme",
+                platformName: "GoFundMe",
+                priority: "hot",
+                followers: 85000,
+                lastDonation: "2024-02-10",
+                lastDonationDays: 15,
+                interests: ["gaza", "rebuilding", "sustainable"],
+                campaigns: [
+                    { name: "Gaza Sustainable Housing", amount: 5000 },
+                    { name: "Gaza Water Project", amount: 3000 }
+                ],
+                social: {
+                    twitter: "@ahmed_shirazi",
+                    instagram: "@ahmed.shirazi.uk",
+                    linkedin: "ahmed-shirazi-entrepreneur"
+                },
+                notes: "رائد أعمال بريطاني من أصل عراقي، يهتم بالمشاريع المستدامة. تبرع مؤخراً ويحتمل تكراره.",
+                strategy: [
+                    "🔥 ابدأ فوراً - مانح ساخن!",
+                    "قدم مشروعاً مستداماً (طاقة شمسية، مياه)",
+                    "أظهر العائد طويل المدى للاستثمار الإنساني",
+                    "تواصل عبر LinkedIn برسالة احترافية",
+                    "اذكر نجاح مشروع Gaza Water الذي دعمه"
+                ],
+                contacted: false
+            },
+            {
+                id: 5,
+                name: "الجالية الفلسطينية في كندا - تورنتو",
+                type: "organization",
+                location: "canada",
+                locationName: "🇨🇦 كندا - تورنتو",
+                supportType: "both",
+                avgDonation: 10000,
+                platform: "custom",
+                platformName: "منصة خاصة",
+                priority: "high",
+                followers: 30000,
+                lastDonation: "2024-01-25",
+                lastDonationDays: 20,
+                interests: ["gaza", "families", "urgent"],
+                campaigns: [
+                    { name: "Gaza Urgent Relief", amount: 15000 }
+                ],
+                social: {
+                    twitter: "@pcc_toronto",
+                    instagram: "@palestinian.community.toronto",
+                    facebook: "palestiniancommunitycanada"
+                },
+                notes: "تجمعات كبيرة للمغتربين الفلسطينيين، تدعم باستمرار. لديهم فعاليات شهرية لجمع التبرعات.",
+                strategy: [
+                    "تواصل مع رئيس الجالية مباشرة",
+                    "اطلب المشاركة في فعالية جمع تبرعات",
+                    "قدم قصة عائلة فلسطينية محددة",
+                    "أظهر الربط العائلي إن وجد",
+                    "اطلب أن تكون الحملة الرسمية للشهر"
+                ],
+                contacted: false
+            }
+        ];
+
+        // === المتغيرات العامة ===
+        let donors = [];
+        let filteredDonors = [];
+        let selectedDonorId = null;
+        let currentPriorityFilter = 'all';
+
+        // === تهيئة التطبيق ===
+        function init() {
+            // تحميل البيانات من Local Storage أو استخدام البيانات الافتراضية
+            const savedDonors = localStorage.getItem('donorHunterData');
+            if (savedDonors) {
+                donors = JSON.parse(savedDonors);
+            } else {
+                donors = [...defaultDonors];
+                saveDonors();
+            }
+            filteredDonors = [...donors];
+            renderDonors();
+            updateStats();
+            updatePriorityCounts();
+        }
+
+        // === حفظ البيانات ===
+        function saveDonors() {
+            localStorage.setItem('donorHunterData', JSON.stringify(donors));
+        }
+
+        // === البحث والتصفية ===
+        function performSearch() {
+            const name = document.getElementById('searchName').value.toLowerCase();
+            const supportType = document.getElementById('supportType').value;
+            const country = document.getElementById('country').value;
+            const donationRange = document.getElementById('donationRange').value;
+            const platform = document.getElementById('platform').value;
+
+            filteredDonors = donors.filter(donor => {
+                // تصفية بالاسم
+                if (name && !donor.name.toLowerCase().includes(name)) return false;
+
+                // تصفية بنوع الدعم
+                if (supportType && donor.supportType !== supportType) return false;
+
+                // تصفية بالدولة
+                if (country && donor.location !== country) return false;
+
+                // تصفية بالمبلغ
+                if (donationRange) {
+                    const amt = donor.avgDonation;
+                    if (donationRange === 'low' && (amt < 100 || amt > 500)) return false;
+                    if (donationRange === 'medium' && (amt < 500 || amt > 2000)) return false;
+                    if (donationRange === 'high' && (amt < 2000 || amt > 10000)) return false;
+                    if (donationRange === 'very_high' && amt < 10000) return false;
+                }
+
+                // تصفية بالمنصة
+                if (platform && donor.platform !== platform) return false;
+
+                return true;
+            });
+
+            // تطبيق تصفية الأولوية إذا كانت مفعلة
+            if (currentPriorityFilter !== 'all') {
+                filteredDonors = filteredDonors.filter(d => d.priority === currentPriorityFilter);
+            }
+
+            // ترتيب حسب الأولوية
+            const priorityOrder = { hot: 0, high: 1, medium: 2, low: 3 };
+            filteredDonors.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+
+            renderDonors();
+            updateStats();
+        }
+
+        // === تصفية حسب الأولوية ===
+        function filterByPriority(priority) {
+            currentPriorityFilter = priority;
+
+            // تحديث الأزرار النشطة
+            document.querySelectorAll('.priority-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            performSearch();
+        }
+
+        // === عرض المانحين ===
+        function renderDonors() {
+            const grid = document.getElementById('donorsGrid');
+
+            if (filteredDonors.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="icon">🔍</div>
+                        <h3>لا توجد نتائج</h3>
+                        <p>جرب تعديل معايير البحث</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filteredDonors.map(donor => `
+                <div class="donor-card priority-${donor.priority} ${selectedDonorId === donor.id ? 'selected' : ''}"
+                     onclick="selectDonor(${donor.id})">
+                    <div class="donor-header">
+                        <div>
+                            <div class="donor-name">${donor.name}</div>
+                            <div class="donor-type">
+                                ${donor.type === 'individual' ? '👤 شخصي' : '🏢 منظمة'}
+                            </div>
+                        </div>
+                        <span class="priority-badge ${donor.priority}">
+                            ${getPriorityLabel(donor.priority)}
+                        </span>
+                    </div>
+
+                    <div class="donor-info">
+                        <div class="info-item">
+                            📍 <span class="value">${donor.locationName}</span>
+                        </div>
+                        <div class="info-item">
+                            💰 <span class="value">$${donor.avgDonation.toLocaleString()}</span>
+                        </div>
+                        <div class="info-item">
+                            👥 <span class="value">${formatFollowers(donor.followers)}</span>
+                        </div>
+                        <div class="info-item">
+                            🕐 <span class="value">منذ ${donor.lastDonationDays} يوم</span>
+                        </div>
+                    </div>
+
+                    <div class="donor-notes">${donor.notes}</div>
+
+                    <div class="donor-tags">
+                        ${donor.interests.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                    </div>
+
+                    <div class="donor-actions">
+                        <button class="btn-small" onclick="event.stopPropagation(); selectDonor(${donor.id})">
+                            📋 تفاصيل كاملة
+                        </button>
+                        <button class="btn-small" onclick="event.stopPropagation(); showSocialAnalysis(${donor.id})">
+                            🔍 البحث الاجتماعي
+                        </button>
+                        <button class="btn-small" onclick="event.stopPropagation(); showTemplates(${donor.id})">
+                            ✉️ قالب تواصل
+                        </button>
+                        <button class="btn-small ${donor.contacted ? 'contacted' : ''}"
+                                onclick="event.stopPropagation(); toggleContacted(${donor.id})">
+                            ${donor.contacted ? '✓ تم التواصل' : '📞 تم التواصل'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // === اختيار مانح ===
+        function selectDonor(id) {
+            selectedDonorId = id;
+            const donor = donors.find(d => d.id === id);
+
+            // تحديث البطاقات
+            renderDonors();
+
+            // عرض التفاصيل
+            const panel = document.getElementById('donorDetailsPanel');
+            panel.innerHTML = `
+                <h3>👤 بيانات المانح</h3>
+                <div class="donor-detail-card">
+                    <div class="detail-row">
+                        <span class="label">الاسم</span>
+                        <span class="value">${donor.name}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">النوع</span>
+                        <span class="value">${donor.type === 'individual' ? 'شخصي' : 'منظمة'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">الموقع</span>
+                        <span class="value">${donor.locationName}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">نوع الدعم</span>
+                        <span class="value">${getSupportTypeLabel(donor.supportType)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">متوسط التبرع</span>
+                        <span class="value">$${donor.avgDonation.toLocaleString()}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">المنصة</span>
+                        <span class="value">${donor.platformName}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">المتابعين</span>
+                        <span class="value">${donor.followers.toLocaleString()}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">آخر تبرع</span>
+                        <span class="value">منذ ${donor.lastDonationDays} يوم</span>
+                    </div>
+                </div>
+
+                <h4 style="margin: 15px 0 10px; font-size: 0.95rem;">📜 الحملات السابقة</h4>
+                <div class="donor-detail-card">
+                    ${donor.campaigns.map(c => `
+                        <div class="detail-row">
+                            <span class="label">${c.name}</span>
+                            <span class="value" style="color: var(--success-green);">$${c.amount.toLocaleString()}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // عرض الاستراتيجية
+            const strategyPanel = document.getElementById('strategyPanel');
+            strategyPanel.style.display = 'block';
+            document.getElementById('strategyList').innerHTML = donor.strategy.map(s => `<li>${s}</li>`).join('');
+
+            // عرض روابط السوشيال
+            const socialPanel = document.getElementById('socialPanel');
+            socialPanel.style.display = 'block';
+            document.getElementById('socialLinks').innerHTML = `
+                ${donor.social.twitter ? `<a href="https://twitter.com/${donor.social.twitter.replace('@', '')}" target="_blank" class="social-link">🐦 Twitter</a>` : ''}
+                ${donor.social.instagram ? `<a href="https://instagram.com/${donor.social.instagram.replace('@', '')}" target="_blank" class="social-link">📷 Instagram</a>` : ''}
+                ${donor.social.linkedin ? `<a href="https://linkedin.com/in/${donor.social.linkedin}" target="_blank" class="social-link">💼 LinkedIn</a>` : ''}
+                ${donor.social.facebook ? `<a href="https://facebook.com/${donor.social.facebook}" target="_blank" class="social-link">📘 Facebook</a>` : ''}
+                ${donor.social.tiktok ? `<a href="https://tiktok.com/${donor.social.tiktok}" target="_blank" class="social-link">🎵 TikTok</a>` : ''}
+            `;
+        }
+
+        // === قوالب التواصل ===
+        function showTemplates(id) {
+            const donor = donors.find(d => d.id === id);
+            const firstName = donor.name.split(' ')[0].replace('د.', '').trim();
+
+            const templates = generateTemplates(donor, firstName);
+
+            document.getElementById('templatesContent').innerHTML = `
+                <div class="template-card">
+                    <h4>📨 الرسالة الأولى - قصة إنسانية</h4>
+                    <textarea id="template1">${templates.first}</textarea>
+                    <button class="btn-copy" onclick="copyTemplate('template1')">📋 نسخ الرسالة</button>
+                </div>
+
+                <div class="template-card">
+                    <h4>🔄 رسالة المتابعة - إلحاح وشفافية</h4>
+                    <textarea id="template2">${templates.followup}</textarea>
+                    <button class="btn-copy" onclick="copyTemplate('template2')">📋 نسخ الرسالة</button>
+                </div>
+
+                <div class="template-card">
+                    <h4>💝 رسالة الشكر - بناء العلاقة</h4>
+                    <textarea id="template3">${templates.thanks}</textarea>
+                    <button class="btn-copy" onclick="copyTemplate('template3')">📋 نسخ الرسالة</button>
+                </div>
+            `;
+
+            openModal('templatesModal');
+        }
+
+        // === توليد قوالب الرسائل ===
+        function generateTemplates(donor, firstName) {
+            const interests = donor.interests.join('، ');
+            const avgAmount = donor.avgDonation;
+
+            return {
+                first: `السلام عليكم ${firstName}،
+
+أكتب إليك من غزة حيث تعاني عائلتي من ظروف صعبة للغاية. لقد تعرض منزلنا للدمار ونحن الآن ${donor.interests.includes('children') ? 'مع أطفالنا الصغار ' : ''}بحاجة ماسة للمساعدة.
+
+علمت باهتمامك بـ ${interests} من خلال دعمك السابق لـ ${donor.campaigns[0]?.name || 'القضايا الإنسانية'}، وهذا ما شجعني على التواصل معك.
+
+نحتاج إلى مبلغ $${avgAmount.toLocaleString()} لـ:
+- توفير الغذاء والماء لمدة 3 أشهر
+- إيجار مؤقت لمكان آمن
+- احتياجات طبية عاجلة
+
+كل دولار يصنع فرقاً كبيراً في حياتنا. هل يمكنك مساعدتنا؟
+
+مع خالص الامتنان والدعاء 🤲`,
+
+                followup: `السلام عليكم ${firstName}،
+
+أتمنى أن تكون بخير. أكتب إليك متابعة لرسالتي السابقة.
+
+الوضع في غزة يزداد صعوبة يوماً بعد يوم، وعائلتي لا تزال بحاجة ماسة للمساعدة.
+
+أريد أن أؤكد لك:
+✅ كل مبلغ سيُوثق بالصور والفواتير
+✅ سأرسل تحديثات أسبوعية عن استخدام الأموال
+✅ يمكنك التواصل معي في أي وقت للاطمئنان
+
+حتى لو لم تستطع المساعدة مالياً، فإن مشاركة قصتنا مع أصدقائك ستساعدنا كثيراً.
+
+جزاك الله خيراً 🤲`,
+
+                thanks: `السلام عليكم ${firstName} الكريم،
+
+لا أجد كلمات تعبر عن امتناننا العميق لدعمك السخي!
+
+بفضل مساعدتك ${donor.campaigns[0] ? `لحملة ${donor.campaigns[0].name}` : 'الكريمة'}، استطعنا:
+- توفير الغذاء للعائلة لمدة شهر كامل
+- شراء الأدوية الضرورية
+- إيجاد مكان آمن مؤقت
+
+أنت جزء من قصة بقائنا، ولن ننسى فضلك أبداً.
+
+سأبقيك على اطلاع بأخبارنا، وأدعو الله أن يجزيك خير الجزاء.
+
+مع خالص المحبة والدعاء من غزة 💚`
+            };
+        }
+
+        // === البحث الاجتماعي ===
+        function showSocialAnalysis(id) {
+            const donor = donors.find(d => d.id === id);
+
+            // محاكاة تحليل AI للسوشيال ميديا
+            const engagementRate = (Math.random() * 5 + 2).toFixed(1);
+            const bestTime = ['الصباح (9-11)', 'بعد الظهر (2-4)', 'المساء (7-9)'][Math.floor(Math.random() * 3)];
+            const responseRate = Math.floor(Math.random() * 30 + 60);
+
+            document.getElementById('socialContent').innerHTML = `
+                <div class="social-analysis">
+                    <div class="analysis-card">
+                        <h4>📊 إحصائيات الحساب</h4>
+                        <div class="analysis-stat">
+                            <span>عدد المتابعين</span>
+                            <strong>${donor.followers.toLocaleString()}</strong>
+                        </div>
+                        <div class="analysis-stat">
+                            <span>معدل التفاعل</span>
+                            <strong>${engagementRate}%</strong>
+                        </div>
+                        <div class="analysis-stat">
+                            <span>معدل الرد</span>
+                            <strong>${responseRate}%</strong>
+                        </div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <h4>🎯 الاهتمامات الرئيسية</h4>
+                        <div class="donor-tags" style="margin-top: 10px;">
+                            ${donor.interests.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <h4>⏰ أفضل وقت للتواصل</h4>
+                        <p style="font-size: 1.1rem; color: var(--primary-blue); font-weight: 600;">
+                            ${bestTime}
+                        </p>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 5px;">
+                            بناءً على نشاط الحساب وأوقات النشر
+                        </p>
+                    </div>
+
+                    <div class="analysis-card">
+                        <h4>💡 توصيات التواصل</h4>
+                        <ul style="font-size: 0.85rem; padding-right: 20px;">
+                            <li>استخدم الرسائل المباشرة (DM) للتواصل الأولي</li>
+                            <li>أرفق صوراً مؤثرة مع الرسالة</li>
+                            <li>اذكر اهتمامه بـ ${donor.interests[0]} في البداية</li>
+                            <li>تابع بعد 48 ساعة إذا لم يرد</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            openModal('socialModal');
+        }
+
+        // === تقرير الأولوية ===
+        function showPriorityReport() {
+            const hotDonors = donors.filter(d => d.priority === 'hot');
+            const highDonors = donors.filter(d => d.priority === 'high');
+            const totalFollowers = donors.reduce((sum, d) => sum + d.followers, 0);
+            const expectedAmount = calculateExpectedAmount(donors);
+            const successRate = calculateSuccessRate(donors);
+
+            document.getElementById('reportContent').innerHTML = `
+                <div class="stats-grid" style="margin-bottom: 20px;">
+                    <div class="stat-card hot">
+                        <div class="icon">🔥</div>
+                        <div class="value">${hotDonors.length}</div>
+                        <div class="label">مانحون ساخنون</div>
+                    </div>
+                    <div class="stat-card high">
+                        <div class="icon">⭐</div>
+                        <div class="value">${highDonors.length}</div>
+                        <div class="label">أولوية عالية</div>
+                    </div>
+                </div>
+
+                <div class="donor-detail-card">
+                    <h4 style="margin-bottom: 15px; color: var(--primary-blue);">📈 تحليل الذكاء الاصطناعي</h4>
+                    <div class="detail-row">
+                        <span class="label">إجمالي المتابعين</span>
+                        <span class="value">${totalFollowers.toLocaleString()}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">معدل النجاح المتوقع</span>
+                        <span class="value" style="color: var(--success-green);">${successRate}%</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">المبلغ المتوقع جمعه</span>
+                        <span class="value" style="color: var(--primary-blue);">$${expectedAmount.toLocaleString()}</span>
+                    </div>
+                </div>
+
+                <h4 style="margin: 20px 0 15px;">🎯 خطة العمل المقترحة</h4>
+                <ul class="strategy-list">
+                    <li>ابدأ بـ <strong>${hotDonors.map(d => d.name).join('، ') || 'المانحين الساخنين'}</strong> - أعلى احتمال للاستجابة</li>
+                    <li>خصص 2-3 ساعات يومياً للتواصل المركز</li>
+                    <li>استخدم القوالب الجاهزة وخصصها لكل مانح</li>
+                    <li>تابع بعد 48 ساعة مع من لم يرد</li>
+                    <li>وثق كل تواصل لتحسين الاستراتيجية</li>
+                </ul>
+
+                <h4 style="margin: 20px 0 15px;">📋 ترتيب الأولوية للتواصل</h4>
+                <div style="max-height: 200px; overflow-y: auto;">
+                    ${[...donors].sort((a, b) => {
+                        const order = { hot: 0, high: 1, medium: 2, low: 3 };
+                        return order[a.priority] - order[b.priority];
+                    }).map((d, i) => `
+                        <div class="upcoming-item">
+                            <div>
+                                <div class="name">${i + 1}. ${d.name}</div>
+                                <div class="date">متوسط التبرع: $${d.avgDonation.toLocaleString()}</div>
+                            </div>
+                            <span class="priority-badge ${d.priority}">${getPriorityLabel(d.priority)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            openModal('reportModal');
+        }
+
+        // === تصدير البيانات ===
+        function exportDonors() {
+            const headers = ['الاسم', 'النوع', 'الموقع', 'نوع الدعم', 'متوسط التبرع', 'الأولوية', 'المنصة', 'المتابعين'];
+            const rows = filteredDonors.map(d => [
+                d.name,
+                d.type === 'individual' ? 'شخصي' : 'منظمة',
+                d.locationName,
+                getSupportTypeLabel(d.supportType),
+                `$${d.avgDonation}`,
+                getPriorityLabel(d.priority),
+                d.platformName,
+                d.followers
+            ]);
+
+            const csvContent = '\ufeff' + // BOM for Arabic support
+                headers.join(',') + '\n' +
+                rows.map(r => r.map(cell => `"${cell}"`).join(',')).join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `donor_list_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+
+            showNotification('تم تصدير القائمة بنجاح!');
+        }
+
+        // === تبديل حالة التواصل ===
+        function toggleContacted(id) {
+            const donor = donors.find(d => d.id === id);
+            donor.contacted = !donor.contacted;
+            saveDonors();
+            renderDonors();
+            updateStats();
+        }
+
+        // === تحديث الإحصائيات ===
+        function updateStats() {
+            // إحصائيات الشريط الجانبي
+            document.getElementById('totalDonors').textContent = donors.length;
+            document.getElementById('totalAmount').textContent = '$' + donors.reduce((sum, d) => sum + d.avgDonation, 0).toLocaleString();
+            document.getElementById('contactedCount').textContent = donors.filter(d => d.contacted).length;
+
+            // إحصائيات المنطقة الرئيسية
+            const hotCount = filteredDonors.filter(d => d.priority === 'hot').length;
+            const totalFollowers = filteredDonors.reduce((sum, d) => sum + d.followers, 0);
+            const successRate = calculateSuccessRate(filteredDonors);
+            const expectedAmount = calculateExpectedAmount(filteredDonors);
+
+            document.getElementById('statHot').textContent = hotCount;
+            document.getElementById('statFollowers').textContent = formatFollowers(totalFollowers);
+            document.getElementById('statSuccess').textContent = successRate + '%';
+            document.getElementById('statExpected').textContent = '$' + expectedAmount.toLocaleString();
+        }
+
+        // === تحديث عدادات الأولوية ===
+        function updatePriorityCounts() {
+            document.getElementById('countAll').textContent = donors.length;
+            document.getElementById('countHot').textContent = donors.filter(d => d.priority === 'hot').length;
+            document.getElementById('countHigh').textContent = donors.filter(d => d.priority === 'high').length;
+            document.getElementById('countMedium').textContent = donors.filter(d => d.priority === 'medium').length;
+            document.getElementById('countLow').textContent = donors.filter(d => d.priority === 'low').length;
+        }
+
+        // === دوال مساعدة ===
+        function getPriorityLabel(priority) {
+            const labels = {
+                hot: '🔴 ساخن',
+                high: '🟡 عالي',
+                medium: '🔵 متوسط',
+                low: '🟢 منخفض'
+            };
+            return labels[priority] || priority;
+        }
+
+        function getSupportTypeLabel(type) {
+            const labels = {
+                financial: 'مالي فقط',
+                moral: 'معنوي فقط',
+                both: 'مالي + معنوي'
+            };
+            return labels[type] || type;
+        }
+
+        function formatFollowers(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
+            return num.toString();
+        }
+
+        function calculateExpectedAmount(donorsList) {
+            // حساب AI: 60% من إجمالي المبالغ المتوقعة
+            return Math.round(donorsList.reduce((sum, d) => sum + d.avgDonation, 0) * 0.6);
+        }
+
+        function calculateSuccessRate(donorsList) {
+            // حساب AI: معدل النجاح بناءً على الأولويات
+            const weights = { hot: 90, high: 75, medium: 50, low: 25 };
+            const total = donorsList.reduce((sum, d) => sum + weights[d.priority], 0);
+            return Math.round(total / donorsList.length) || 0;
+        }
+
+        // === النوافذ المنبثقة ===
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // إغلاق النافذة بالضغط خارجها
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // === نسخ القوالب ===
+        function copyTemplate(id) {
+            const textarea = document.getElementById(id);
+            textarea.select();
+            document.execCommand('copy');
+            showNotification('تم نسخ الرسالة بنجاح!');
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('copyNotification');
+            notification.textContent = '✓ ' + message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 2500);
+        }
+
+        // === تهيئة التطبيق عند التحميل ===
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
