@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أداة تحسين الصور الاحترافية</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* الهيدر */
+        .header {
+            background: rgba(0, 212, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+            padding: 18px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* الحاوي الرئيسي */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* منطقة الرفع */
+        .upload-zone {
+            border: 3px dashed rgba(0, 212, 255, 0.4);
+            border-radius: 20px;
+            padding: 80px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            background: rgba(0, 212, 255, 0.02);
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.03) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .upload-zone:hover, .upload-zone.drag-over {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.08);
+            transform: scale(1.01);
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .upload-zone h2 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+            position: relative;
+        }
+
+        .upload-zone p {
+            color: #888;
+            font-size: 0.95em;
+            position: relative;
+        }
+
+        /* منطقة العمل */
+        .workspace {
+            display: none;
+            gap: 20px;
+        }
+
+        .workspace.active {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+        }
+
+        /* منطقة المعاينة */
+        .preview-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px;
+        }
+
+        .preview-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .preview-tab {
+            padding: 8px 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .preview-tab.active {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .canvas-wrapper canvas {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 8px;
+        }
+
+        /* مقارنة جنب لجنب */
+        .compare-view {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .compare-view.active {
+            display: grid;
+        }
+
+        .compare-label {
+            text-align: center;
+            padding: 8px;
+            color: #00d4ff;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+        /* لوحة التحكم */
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .controls-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .panel-title {
+            font-size: 1.1em;
+            color: #00d4ff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* الفلاتر المسبقة */
+        .presets-section {
+            margin-bottom: 25px;
+        }
+
+        .presets-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .preset-btn {
+            padding: 10px 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .preset-btn:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: rgba(0, 212, 255, 0.4);
+            color: #00d4ff;
+            transform: translateY(-2px);
+        }
+
+        .preset-btn.active {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        /* المنزلقات */
+        .control-group {
+            margin-bottom: 18px;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.88em;
+        }
+
+        .control-label span:first-child {
+            color: #bbb;
+        }
+
+        .control-value {
+            color: #00d4ff;
+            font-weight: bold;
+            font-size: 0.85em;
+            min-width: 40px;
+            text-align: left;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #00d4ff;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+            transition: transform 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* الفاصل */
+        .separator {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            margin: 20px 0;
+        }
+
+        /* الأزرار */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #0088ff);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ccc;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+
+        .btn-danger {
+            background: rgba(255, 59, 48, 0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 59, 48, 0.25);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00c853, #00e676);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 200, 83, 0.3);
+        }
+
+        .btn-small {
+            padding: 6px 14px;
+            font-size: 0.8em;
+            width: auto;
+        }
+
+        /* معلومات الصورة */
+        .image-info {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 0.82em;
+            color: #888;
+        }
+
+        .image-info div {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+        }
+
+        /* التاريخ */
+        .history-section {
+            margin-top: 15px;
+        }
+
+        .history-list {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .history-item {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            opacity: 0.7;
+        }
+
+        .history-item:hover {
+            border-color: #00d4ff;
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .history-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* التحميل */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            z-index: 10;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 212, 255, 0.2);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* نافذة القص */
+        .crop-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .crop-overlay.active {
+            display: flex;
+        }
+
+        .crop-container {
+            position: relative;
+            max-width: 80vw;
+            max-height: 70vh;
+        }
+
+        .crop-container canvas {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 8px;
+        }
+
+        .crop-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* خيارات التصدير */
+        .export-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        .export-modal.active {
+            display: flex;
+        }
+
+        .export-box {
+            background: #1a1a2e;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            padding: 30px;
+            width: 400px;
+            max-width: 90vw;
+        }
+
+        .export-box h3 {
+            color: #00d4ff;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .format-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .format-option {
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .format-option:hover, .format-option.selected {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .format-option .ext {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+
+        .format-option .desc {
+            font-size: 0.75em;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .quality-control {
+            margin: 15px 0;
+        }
+
+        /* التوتيبس */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* التجاوب */
+        @media (max-width: 900px) {
+            .workspace.active {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-panel {
+                max-height: none;
+            }
+
+            .compare-view.active {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .presets-grid {
+                grid-template-columns: 1fr;
+            }
+            .upload-zone {
+                padding: 40px 20px;
+            }
+        }
+
+        /* إخفاء عنصر الملف */
+        .hidden-input { display: none; }
+
+        /* تأثير القلب */
+        .rotate-controls {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .rotate-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        .rotate-btn:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: rgba(0, 212, 255, 0.4);
+            color: #00d4ff;
+        }
+
+        /* شريط الحالة */
+        .status-bar {
+            text-align: center;
+            padding: 8px;
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الهيدر -->
+    <header class="header">
+        <h1>🎨 أداة تحسين الصور الاحترافية</h1>
+        <div class="header-actions" id="headerActions" style="display:none;">
+            <button class="btn btn-small btn-secondary" onclick="resetAll()">🔄 صورة جديدة</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+
+        <!-- منطقة الرفع -->
+        <div class="upload-zone" id="uploadZone">
+            <span class="upload-icon">📤</span>
+            <h2>اسحب الصورة هنا أو اضغط للاختيار</h2>
+            <p>يدعم: JPG, PNG, WEBP, BMP — حجم أقصى: 20MB</p>
+            <input type="file" id="fileInput" accept="image/*" class="hidden-input">
+        </div>
+
+        <!-- منطقة العمل -->
+        <div class="workspace" id="workspace">
+
+            <!-- المعاينة -->
+            <div class="preview-section">
+                <div class="preview-tabs">
+                    <div class="preview-tab active" data-view="enhanced" onclick="switchView('enhanced')">✨ المحسّن</div>
+                    <div class="preview-tab" data-view="original" onclick="switchView('original')">📷 الأصلي</div>
+                    <div class="preview-tab" data-view="compare" onclick="switchView('compare')">↔️ مقارنة</div>
+                </div>
+
+                <!-- عرض المحسن -->
+                <div class="canvas-wrapper" id="enhancedView">
+                    <canvas id="canvasEnhanced"></canvas>
+                    <div class="loading-overlay" id="loadingOverlay">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- عرض الأصلي -->
+                <div class="canvas-wrapper" id="originalView" style="display:none;">
+                    <canvas id="canvasOriginal"></canvas>
+                </div>
+
+                <!-- عرض المقارنة -->
+                <div class="compare-view" id="compareView">
+                    <div>
+                        <div class="compare-label">📷 الأصلي</div>
+                        <canvas id="canvasCompare1"></canvas>
+                    </div>
+                    <div>
+                        <div class="compare-label">✨ المحسّن</div>
+                        <canvas id="canvasCompare2"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- لوحة التحكم -->
+            <div class="controls-panel">
+                <div class="panel-title">⚙️ أدوات التحسين</div>
+
+                <!-- معلومات الصورة -->
+                <div class="image-info" id="imageInfo">
+                    <div><span>الأبعاد:</span> <span id="infoDimensions">-</span></div>
+                    <div><span>الحجم:</span> <span id="infoSize">-</span></div>
+                    <div><span>النوع:</span> <span id="infoType">-</span></div>
+                </div>
+
+                <!-- الفلاتر المسبقة -->
+                <div class="presets-section">
+                    <div class="control-label"><span>🎭 فلاتر جاهزة</span></div>
+                    <div class="presets-grid">
+                        <div class="preset-btn" onclick="applyPreset('none')">بدون فلتر</div>
+                        <div class="preset-btn" onclick="applyPreset('documentary')">📹 وثائقي</div>
+                        <div class="preset-btn" onclick="applyPreset('vintage')">🎞️ كلاسيكي</div>
+                        <div class="preset-btn" onclick="applyPreset('warm')">🌅 دافئ</div>
+                        <div class="preset-btn" onclick="applyPreset('cold')">❄️ بارد</div>
+                        <div class="preset-btn" onclick="applyPreset('dramatic')">🎬 درامي</div>
+                        <div class="preset-btn" onclick="applyPreset('bw')">⬛ أبيض وأسود</div>
+                        <div class="preset-btn" onclick="applyPreset('sepia')">📜 سيبيا</div>
+                        <div class="preset-btn" onclick="applyPreset('vivid')">🌈 حيوي</div>
+                        <div class="preset-btn" onclick="applyPreset('soft')">🌸 ناعم</div>
+                    </div>
+                </div>
+
+                <div class="separator"></div>
+
+                <!-- تدوير وقلب -->
+                <div class="control-label"><span>🔄 التدوير والقلب</span></div>
+                <div class="rotate-controls">
+                    <button class="rotate-btn" onclick="rotateImage(-90)" title="تدوير يسار">↺</button>
+                    <button class="rotate-btn" onclick="rotateImage(90)" title="تدوير يمين">↻</button>
+                    <button class="rotate-btn" onclick="flipImage('h')" title="قلب أفقي">↔</button>
+                    <button class="rotate-btn" onclick="flipImage('v')" title="قلب عمودي">↕</button>
+                </div>
+
+                <div class="separator"></div>
+
+                <!-- التعديلات الأساسية -->
+                <div class="control-label"><span>☀️ التعديلات الأساسية</span></div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>السطوع</span>
+                        <span class="control-value" id="brightnessVal">0</span>
+                    </div>
+                    <input type="range" id="brightness" min="-100" max="100" value="0" oninput="updateSlider(this)">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>التباين</span>
+                        <span class="control-value" id="contrastVal">0</span>
+                    </div>
+                    <input type="range" id="contrast" min="-100" max="100" value="0" oninput="updateSlider(this)">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>التشبع</span>
+                        <span class="control-value" id="saturationVal">0</span>
+                    </div>
+                    <input type="range" id="saturation" min="-100" max="100" value="0" oninput="updateSlider(this)">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>التعريض</span>
+                        <span class="control-value" id="exposureVal">0</span>
+                    </div>
+                    <input type="range" id="exposure" min="-100" max="100" value="0" oninput="updateSlider(this)">
+                </div>
+
+                <div class="separator"></div>
+
+                <!-- تعديلات متقدمة -->
+                <div class="control-label"><span>🎨 تعديلات متقدمة</span></div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>الحدة</span>
+                        <span class="control-value" id="sharpnessVal">0</span>
+                    </div>
+                    <input type="range" id="sharpness" min="0" max="100" value="0" oninput="updateSlider(this)">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>الضبابية</span>
+                        <span class="control-value" id="blurVal">0</span>
+                    </div>
+                    <input type="range" id="blur" min="0" max="20" value="0" oninput="updateSlider(this)">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>الحرارة</span>
+                        <span class="control-value" id="temperatureVal">0</span>
+                    </div>
+                    <input type="range" id="temperature" min="-100" max="100" value="0" oninput="updateSlider(this)">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>الصبغة</span>
+                        <span class="control-value" id="tintVal">0</span>
+                    </div>
+                    <input type="range" id="tint" min="-100" max="100" value="0" oninput="updateSlider(this)">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>الإضاءات</span>
+                        <span class="control-value" id="highlightsVal">0</span>
+                    </div>
+                    <input type="range" id="highlights" min="-100" max="100" value="0" oninput="updateSlider(this)">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>الظلال</span>
+                        <span class="control-value" id="shadowsVal">0</span>
+                    </div>
+                    <input type="range" id="shadows" min="-100" max="100" value="0" oninput="updateSlider(this)">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>الفينييت</span>
+                        <span class="control-value" id="vignetteVal">0</span>
+                    </div>
+                    <input type="range" id="vignette" min="0" max="100" value="0" oninput="updateSlider(this)">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>التحبب</span>
+                        <span class="control-value" id="grainVal">0</span>
+                    </div>
+                    <input type="range" id="grain" min="0" max="100" value="0" oninput="updateSlider(this)">
+                </div>
+
+                <div class="separator"></div>
+
+                <!-- الأزرار -->
+                <button class="btn btn-secondary" onclick="resetSliders()">↩️ إعادة ضبط الكل</button>
+                <button class="btn btn-primary" onclick="openExportModal()">📥 تصدير الصورة</button>
+
+                <div class="separator"></div>
+
+                <!-- سجل التعديلات -->
+                <div class="history-section">
+                    <div class="control-label"><span>📜 السجل</span></div>
+                    <div class="history-list" id="historyList"></div>
+                    <button class="btn btn-small btn-secondary" onclick="undoLast()" style="margin-top:8px;">↩️ تراجع</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة القص -->
+    <div class="crop-overlay" id="cropOverlay">
+        <h3 style="color:#00d4ff;">✂️ قص الصورة</h3>
+        <div class="crop-container">
+            <canvas id="cropCanvas"></canvas>
+        </div>
+        <div class="crop-actions">
+            <button class="btn btn-small btn-primary" onclick="applyCrop()">✅ تطبيق</button>
+            <button class="btn btn-small btn-secondary" onclick="closeCrop()">❌ إلغاء</button>
+        </div>
+    </div>
+
+    <!-- نافذة التصدير -->
+    <div class="export-modal" id="exportModal">
+        <div class="export-box">
+            <h3>📥 تصدير الصورة</h3>
+
+            <div class="control-label"><span>صيغة الملف:</span></div>
+            <div class="format-options">
+                <div class="format-option selected" data-format="png" onclick="selectFormat(this)">
+                    <div class="ext">PNG</div>
+                    <div class="desc">جودة عالية بدون ضغط</div>
+                </div>
+                <div class="format-option" data-format="jpeg" onclick="selectFormat(this)">
+                    <div class="ext">JPG</div>
+                    <div class="desc">حجم صغير مع ضغط</div>
+                </div>
+                <div class="format-option" data-format="webp" onclick="selectFormat(this)">
+                    <div class="ext">WEBP</div>
+                    <div class="desc">حديث وفعال</div>
+                </div>
+                <div class="format-option" data-format="bmp" onclick="selectFormat(this)">
+                    <div class="ext">BMP</div>
+                    <div class="desc">بدون ضغط إطلاقاً</div>
+                </div>
+            </div>
+
+            <div class="quality-control" id="qualityControl">
+                <div class="control-label">
+                    <span>جودة الضغط:</span>
+                    <span class="control-value" id="qualityVal">92%</span>
+                </div>
+                <input type="range" id="exportQuality" min="10" max="100" value="92" oninput="document.getElementById('qualityVal').textContent = this.value + '%'">
+            </div>
+
+            <button class="btn btn-success" onclick="exportImage()">⬇️ تنزيل الآن</button>
+            <button class="btn btn-secondary" onclick="closeExportModal()" style="margin-top:5px;">❌ إلغاء</button>
+        </div>
+    </div>
+
+    <!-- شريط الحالة -->
+    <div class="status-bar" id="statusBar">أداة تحسين الصور الاحترافية — تعمل بالكامل في المتصفح بدون إنترنت</div>
+
+    <script>
+    // ===== المتغيرات العامة =====
+    let originalImage = null;
+    let currentRotation = 0;
+    let flipH = false, flipV = false;
+    let currentFormat = 'png';
+    let history = [];
+    let historyIndex = -1;
+    let processingTimeout = null;
+    let fileInfo = {};
+
+    // ===== عناصر الصفحة =====
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const workspace = document.getElementById('workspace');
+
+    // ===== الفلاتر المسبقة =====
+    const presets = {
+        none:        { brightness: 0, contrast: 0, saturation: 0, exposure: 0, sharpness: 0, blur: 0, temperature: 0, tint: 0, highlights: 0, shadows: 0, vignette: 0, grain: 0 },
+        documentary: { brightness: -5, contrast: 15, saturation: -25, exposure: 0, sharpness: 20, blur: 0, temperature: -10, tint: 0, highlights: -10, shadows: 10, vignette: 30, grain: 10 },
+        vintage:     { brightness: 5, contrast: -10, saturation: -30, exposure: 5, sharpness: 0, blur: 0, temperature: 20, tint: 10, highlights: -20, shadows: 15, vignette: 40, grain: 25 },
+        warm:        { brightness: 5, contrast: 10, saturation: 15, exposure: 5, sharpness: 0, blur: 0, temperature: 40, tint: 10, highlights: 0, shadows: 0, vignette: 10, grain: 0 },
+        cold:        { brightness: 0, contrast: 10, saturation: -10, exposure: 0, sharpness: 10, blur: 0, temperature: -40, tint: -10, highlights: 10, shadows: -5, vignette: 15, grain: 0 },
+        dramatic:    { brightness: -10, contrast: 50, saturation: 20, exposure: -5, sharpness: 30, blur: 0, temperature: 0, tint: 0, highlights: -30, shadows: -20, vignette: 50, grain: 5 },
+        bw:          { brightness: 5, contrast: 20, saturation: -100, exposure: 0, sharpness: 15, blur: 0, temperature: 0, tint: 0, highlights: 0, shadows: 0, vignette: 20, grain: 15 },
+        sepia:       { brightness: 5, contrast: 5, saturation: -50, exposure: 0, sharpness: 0, blur: 0, temperature: 50, tint: 20, highlights: -10, shadows: 10, vignette: 25, grain: 10 },
+        vivid:       { brightness: 5, contrast: 25, saturation: 50, exposure: 5, sharpness: 20, blur: 0, temperature: 5, tint: 0, highlights: 10, shadows: 10, vignette: 0, grain: 0 },
+        soft:        { brightness: 10, contrast: -15, saturation: -10, exposure: 10, sharpness: 0, blur: 2, temperature: 10, tint: 5, highlights: 20, shadows: 20, vignette: 0, grain: 0 }
+    };
+
+    // ===== رفع الصورة =====
+    uploadZone.onclick = () => fileInput.click();
+
+    uploadZone.ondragover = (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('drag-over');
+    };
+
+    uploadZone.ondragleave = () => uploadZone.classList.remove('drag-over');
+
+    uploadZone.ondrop = (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('drag-over');
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            fileInput.dispatchEvent(new Event('change'));
+        }
+    };
+
+    fileInput.onchange = () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            showStatus('❌ الرجاء اختيار ملف صورة صالح', 'error');
+            return;
+        }
+
+        if (file.size > 20 * 1024 * 1024) {
+            showStatus('❌ حجم الصورة يتجاوز 20MB', 'error');
+            return;
+        }
+
+        fileInfo = {
+            name: file.name,
+            size: file.size,
+            type: file.type
+        };
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            originalImage = new Image();
+            originalImage.onload = () => {
+                currentRotation = 0;
+                flipH = false;
+                flipV = false;
+                history = [];
+                historyIndex = -1;
+
+                // عرض معلومات الصورة
+                document.getElementById('infoDimensions').textContent = `${originalImage.width} × ${originalImage.height}`;
+                document.getElementById('infoSize').textContent = formatFileSize(fileInfo.size);
+                document.getElementById('infoType').textContent = fileInfo.type.split('/')[1].toUpperCase();
+
+                // إظهار منطقة العمل
+                uploadZone.style.display = 'none';
+                workspace.classList.add('active');
+                document.getElementById('headerActions').style.display = 'flex';
+
+                // رسم الأصلي
+                drawOriginal();
+                resetSliders();
+                applyEffect();
+                saveToHistory();
+
+                showStatus('✅ تم تحميل الصورة بنجاح');
+            };
+            originalImage.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // ===== رسم الصورة الأصلية =====
+    function drawOriginal() {
+        const canvas = document.getElementById('canvasOriginal');
+        const dims = getCanvasDimensions();
+        canvas.width = dims.w;
+        canvas.height = dims.h;
+        const ctx = canvas.getContext('2d');
+        applyTransform(ctx, dims.w, dims.h);
+        ctx.drawImage(originalImage, 0, 0, originalImage.width, originalImage.height);
+    }
+
+    // ===== حساب الأبعاد =====
+    function getCanvasDimensions() {
+        const maxW = 800, maxH = 600;
+        let w = originalImage.width, h = originalImage.height;
+
+        // تبديل الأبعاد عند التدوير 90 أو 270
+        if (currentRotation % 180 !== 0) {
+            [w, h] = [h, w];
+        }
+
+        if (w > maxW || h > maxH) {
+            const r = Math.min(maxW / w, maxH / h);
+            w = Math.floor(w * r);
+            h = Math.floor(h * r);
+        }
+
+        return { w, h };
+    }
+
+    // ===== تطبيق التحويلات =====
+    function applyTransform(ctx, cw, ch) {
+        ctx.save();
+        ctx.translate(cw / 2, ch / 2);
+        ctx.rotate((currentRotation * Math.PI) / 180);
+        ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+
+        let dw, dh;
+        if (currentRotation % 180 !== 0) {
+            dw = ch;
+            dh = cw;
+        } else {
+            dw = cw;
+            dh = ch;
+        }
+        ctx.translate(-dw / 2, -dh / 2);
+        ctx.drawImage(originalImage, 0, 0, dw, dh);
+        ctx.restore();
+    }
+
+    // ===== تطبيق التأثير الرئيسي =====
+    function applyEffect() {
+        if (!originalImage) return;
+
+        // إلغاء أي معالجة سابقة
+        if (processingTimeout) clearTimeout(processingTimeout);
+
+        processingTimeout = setTimeout(() => {
+            const canvas = document.getElementById('canvasEnhanced');
+            const dims = getCanvasDimensions();
+            canvas.width = dims.w;
+            canvas.height = dims.h;
+            const ctx = canvas.getContext('2d');
+
+            // رسم الصورة مع التحويلات
+            applyTransform(ctx, dims.w, dims.h);
+
+            // قراءة القيم
+            const brightness = getVal('brightness');
+            const contrast = getVal('contrast');
+            const saturation = getVal('saturation');
+            const exposure = getVal('exposure');
+            const sharpness = getVal('sharpness');
+            const blurAmount = getVal('blur');
+            const temperature = getVal('temperature');
+            const tint = getVal('tint');
+            const highlights = getVal('highlights');
+            const shadowsAdj = getVal('shadows');
+            const vignetteAmount = getVal('vignette');
+            const grainAmount = getVal('grain');
+
+            // تطبيق الضبابية أولاً (عبر CSS filter)
+            if (blurAmount > 0) {
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = dims.w;
+                tempCanvas.height = dims.h;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.filter = `blur(${blurAmount}px)`;
+                tempCtx.drawImage(canvas, 0, 0);
+                ctx.clearRect(0, 0, dims.w, dims.h);
+                ctx.drawImage(tempCanvas, 0, 0);
+            }
+
+            // معالجة البكسلات
+            const imgData = ctx.getImageData(0, 0, dims.w, dims.h);
+            const d = imgData.data;
+
+            // حساب التباين
+            const contrastFactor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+            const exposureFactor = Math.pow(2, exposure / 100);
+
+            for (let i = 0; i < d.length; i += 4) {
+                let r = d[i], g = d[i + 1], b = d[i + 2];
+
+                // التعريض
+                if (exposure !== 0) {
+                    r *= exposureFactor;
+                    g *= exposureFactor;
+                    b *= exposureFactor;
+                }
+
+                // السطوع
+                if (brightness !== 0) {
+                    const adj = brightness * 2.55;
+                    r += adj;
+                    g += adj;
+                    b += adj;
+                }
+
+                // التباين
+                if (contrast !== 0) {
+                    r = contrastFactor * (r - 128) + 128;
+                    g = contrastFactor * (g - 128) + 128;
+                    b = contrastFactor * (b - 128) + 128;
+                }
+
+                // الحرارة
+                if (temperature !== 0) {
+                    r += temperature * 0.4;
+                    b -= temperature * 0.4;
+                }
+
+                // الصبغة
+                if (tint !== 0) {
+                    g += tint * 0.3;
+                }
+
+                // الإضاءات والظلال
+                const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+                if (highlights !== 0 && lum > 128) {
+                    const factor = ((lum - 128) / 127) * (highlights / 100) * 40;
+                    r += factor;
+                    g += factor;
+                    b += factor;
+                }
+                if (shadowsAdj !== 0 && lum < 128) {
+                    const factor = ((128 - lum) / 128) * (shadowsAdj / 100) * 40;
+                    r += factor;
+                    g += factor;
+                    b += factor;
+                }
+
+                // التشبع
+                if (saturation !== 0) {
+                    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                    const satFactor = 1 + saturation / 100;
+                    r = gray + (r - gray) * satFactor;
+                    g = gray + (g - gray) * satFactor;
+                    b = gray + (b - gray) * satFactor;
+                }
+
+                // التحبب
+                if (grainAmount > 0) {
+                    const noise = (Math.random() - 0.5) * grainAmount * 2.5;
+                    r += noise;
+                    g += noise;
+                    b += noise;
+                }
+
+                // التقييد
+                d[i] = Math.min(255, Math.max(0, r));
+                d[i + 1] = Math.min(255, Math.max(0, g));
+                d[i + 2] = Math.min(255, Math.max(0, b));
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+
+            // الحدة (Unsharp Mask مبسط)
+            if (sharpness > 0) {
+                applySharpness(ctx, dims.w, dims.h, sharpness / 100);
+            }
+
+            // الفينييت
+            if (vignetteAmount > 0) {
+                const vStr = vignetteAmount / 100;
+                const cx = dims.w / 2, cy = dims.h / 2;
+                const radius = Math.sqrt(cx * cx + cy * cy);
+                const grad = ctx.createRadialGradient(cx, cy, radius * 0.3, cx, cy, radius);
+                grad.addColorStop(0, `rgba(0,0,0,0)`);
+                grad.addColorStop(1, `rgba(0,0,0,${vStr * 0.7})`);
+                ctx.globalCompositeOperation = 'multiply';
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, dims.w, dims.h);
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            // تحديث المقارنة إذا كانت مفعلة
+            updateCompareView();
+
+        }, 30); // تأخير بسيط لتحسين الأداء
+    }
+
+    // ===== الحدة =====
+    function applySharpness(ctx, w, h, amount) {
+        const imgData = ctx.getImageData(0, 0, w, h);
+        const d = imgData.data;
+        const copy = new Uint8ClampedArray(d);
+
+        const kernel = [
+            0, -1, 0,
+            -1, 5, -1,
+            0, -1, 0
+        ];
+
+        const mix = amount;
+
+        for (let y = 1; y < h - 1; y++) {
+            for (let x = 1; x < w - 1; x++) {
+                for (let c = 0; c < 3; c++) {
+                    let val = 0;
+                    for (let ky = -1; ky <= 1; ky++) {
+                        for (let kx = -1; kx <= 1; kx++) {
+                            const idx = ((y + ky) * w + (x + kx)) * 4 + c;
+                            val += copy[idx] * kernel[(ky + 1) * 3 + (kx + 1)];
+                        }
+                    }
+                    const idx = (y * w + x) * 4 + c;
+                    d[idx] = Math.min(255, Math.max(0, copy[idx] * (1 - mix) + val * mix));
+                }
+            }
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+    }
+
+    // ===== تحديث المقارنة =====
+    function updateCompareView() {
+        if (document.getElementById('compareView').classList.contains('active')) {
+            // الأصلي
+            const c1 = document.getElementById('canvasCompare1');
+            const dims = getCanvasDimensions();
+            c1.width = dims.w;
+            c1.height = dims.h;
+            const ctx1 = c1.getContext('2d');
+            applyTransform(ctx1, dims.w, dims.h);
+
+            // المحسن
+            const c2 = document.getElementById('canvasCompare2');
+            c2.width = dims.w;
+            c2.height = dims.h;
+            const ctx2 = c2.getContext('2d');
+            const enhanced = document.getElementById('canvasEnhanced');
+            ctx2.drawImage(enhanced, 0, 0, dims.w, dims.h);
+        }
+    }
+
+    // ===== التبديل بين العروض =====
+    function switchView(view) {
+        // تحديث التبويبات
+        document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`.preview-tab[data-view="${view}"]`).classList.add('active');
+
+        // إخفاء الكل
+        document.getElementById('enhancedView').style.display = 'none';
+        document.getElementById('originalView').style.display = 'none';
+        document.getElementById('compareView').classList.remove('active');
+
+        if (view === 'enhanced') {
+            document.getElementById('enhancedView').style.display = 'flex';
+        } else if (view === 'original') {
+            document.getElementById('originalView').style.display = 'flex';
+            drawOriginal();
+        } else if (view === 'compare') {
+            document.getElementById('compareView').classList.add('active');
+            updateCompareView();
+        }
+    }
+
+    // ===== تحديث المنزلقات =====
+    function updateSlider(el) {
+        document.getElementById(el.id + 'Val').textContent = el.value;
+        applyEffect();
+    }
+
+    function getVal(id) {
+        return parseInt(document.getElementById(id).value);
+    }
+
+    // ===== الفلاتر المسبقة =====
+    function applyPreset(name) {
+        const p = presets[name];
+        if (!p) return;
+
+        // تحديث الأزرار
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // تطبيق القيم
+        Object.keys(p).forEach(key => {
+            const el = document.getElementById(key);
+            if (el) {
+                el.value = p[key];
+                document.getElementById(key + 'Val').textContent = p[key];
+            }
+        });
+
+        applyEffect();
+        saveToHistory();
+    }
+
+    // ===== إعادة الضبط =====
+    function resetSliders() {
+        applyPreset('none');
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    }
+
+    // ===== التدوير =====
+    function rotateImage(deg) {
+        currentRotation = (currentRotation + deg + 360) % 360;
+        drawOriginal();
+        applyEffect();
+        saveToHistory();
+    }
+
+    // ===== القلب =====
+    function flipImage(dir) {
+        if (dir === 'h') flipH = !flipH;
+        else flipV = !flipV;
+        drawOriginal();
+        applyEffect();
+        saveToHistory();
+    }
+
+    // ===== السجل =====
+    function saveToHistory() {
+        const canvas = document.getElementById('canvasEnhanced');
+        const thumb = canvas.toDataURL('image/jpeg', 0.3);
+
+        // حذف أي سجلات بعد الحالي
+        history = history.slice(0, historyIndex + 1);
+
+        history.push({
+            thumb,
+            settings: getCurrentSettings(),
+            rotation: currentRotation,
+            flipH, flipV
+        });
+
+        historyIndex = history.length - 1;
+        renderHistory();
+    }
+
+    function getCurrentSettings() {
+        const settings = {};
+        const ids = ['brightness', 'contrast', 'saturation', 'exposure', 'sharpness', 'blur', 'temperature', 'tint', 'highlights', 'shadows', 'vignette', 'grain'];
+        ids.forEach(id => settings[id] = getVal(id));
+        return settings;
+    }
+
+    function renderHistory() {
+        const list = document.getElementById('historyList');
+        list.innerHTML = '';
+        history.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            if (idx === historyIndex) div.style.borderColor = '#00d4ff';
+            div.innerHTML = `<img src="${item.thumb}" alt="سجل ${idx + 1}">`;
+            div.onclick = () => restoreHistory(idx);
+            list.appendChild(div);
+        });
+    }
+
+    function restoreHistory(idx) {
+        if (idx < 0 || idx >= history.length) return;
+        historyIndex = idx;
+        const item = history[idx];
+
+        currentRotation = item.rotation;
+        flipH = item.flipH;
+        flipV = item.flipV;
+
+        Object.keys(item.settings).forEach(key => {
+            const el = document.getElementById(key);
+            if (el) {
+                el.value = item.settings[key];
+                document.getElementById(key + 'Val').textContent = item.settings[key];
+            }
+        });
+
+        drawOriginal();
+        applyEffect();
+        renderHistory();
+    }
+
+    function undoLast() {
+        if (historyIndex > 0) {
+            restoreHistory(historyIndex - 1);
+        }
+    }
+
+    // ===== التصدير =====
+    function openExportModal() {
+        document.getElementById('exportModal').classList.add('active');
+        updateQualityVisibility();
+    }
+
+    function closeExportModal() {
+        document.getElementById('exportModal').classList.remove('active');
+    }
+
+    function selectFormat(el) {
+        document.querySelectorAll('.format-option').forEach(f => f.classList.remove('selected'));
+        el.classList.add('selected');
+        currentFormat = el.dataset.format;
+        updateQualityVisibility();
+    }
+
+    function updateQualityVisibility() {
+        const qc = document.getElementById('qualityControl');
+        qc.style.display = (currentFormat === 'jpeg' || currentFormat === 'webp') ? 'block' : 'none';
+    }
+
+    function exportImage() {
+        const canvas = document.getElementById('canvasEnhanced');
+        const quality = parseInt(document.getElementById('exportQuality').value) / 100;
+
+        let mimeType, ext;
+        switch (currentFormat) {
+            case 'jpeg':
+                mimeType = 'image/jpeg';
+                ext = 'jpg';
+                break;
+            case 'webp':
+                mimeType = 'image/webp';
+                ext = 'webp';
+                break;
+            case 'bmp':
+                mimeType = 'image/bmp';
+                ext = 'bmp';
+                break;
+            default:
+                mimeType = 'image/png';
+                ext = 'png';
+        }
+
+        const dataUrl = canvas.toDataURL(mimeType, quality);
+        const link = document.createElement('a');
+        const baseName = fileInfo.name ? fileInfo.name.replace(/\.[^.]+$/, '') : 'image';
+        link.download = `${baseName}_enhanced.${ext}`;
+        link.href = dataUrl;
+        link.click();
+
+        closeExportModal();
+        showStatus(`✅ تم تنزيل الصورة بصيغة ${ext.toUpperCase()} بنجاح!`);
+    }
+
+    // ===== إعادة البدء =====
+    function resetAll() {
+        originalImage = null;
+        currentRotation = 0;
+        flipH = false;
+        flipV = false;
+        history = [];
+        historyIndex = -1;
+
+        workspace.classList.remove('active');
+        uploadZone.style.display = 'block';
+        document.getElementById('headerActions').style.display = 'none';
+        fileInput.value = '';
+
+        showStatus('🔄 جاهز لصورة جديدة');
+    }
+
+    // ===== شريط الحالة =====
+    function showStatus(msg, type = 'info') {
+        const bar = document.getElementById('statusBar');
+        bar.textContent = msg;
+        bar.style.color = type === 'error' ? '#ff6b6b' : '#00d4ff';
+        setTimeout(() => {
+            bar.style.color = '#666';
+            bar.textContent = 'أداة تحسين الصور الاحترافية — تعمل بالكامل في المتصفح بدون إنترنت';
+        }, 3000);
+    }
+
+    // ===== أدوات مساعدة =====
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    // ===== اختصارات لوحة المفاتيح =====
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'z') {
+            e.preventDefault();
+            undoLast();
+        }
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            if (originalImage) openExportModal();
+        }
+        if (e.key === 'Escape') {
+            closeExportModal();
+            closeCrop();
+        }
+    });
+
+    function closeCrop() {
+        document.getElementById('cropOverlay').classList.remove('active');
+    }
+
+    function applyCrop() {
+        closeCrop();
+    }
+    </script>
+</body>
+</html>
