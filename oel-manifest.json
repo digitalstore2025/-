@@ -1,0 +1,24 @@
+{
+  "name": "Open English Lab – American Accent",
+  "short_name": "OEL",
+  "description": "Learn American English pronunciation in 180 days – Pronunciation First",
+  "start_url": "./open_english_lab.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0e1a",
+  "theme_color": "#0a0e1a",
+  "lang": "en-US",
+  "categories": ["education", "language"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%230a0e1a'/><text x='96' y='120' font-size='100' text-anchor='middle' fill='%2300d4aa'>E</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='64' fill='%230a0e1a'/><text x='256' y='320' font-size='260' text-anchor='middle' fill='%2300d4aa'>E</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
