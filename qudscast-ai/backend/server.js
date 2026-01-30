@@ -36,6 +36,66 @@ const JINGLES_PATH = path.join(STORAGE_PATH, 'jingles');
   }
 });
 
+// Video format presets for different platforms
+const VIDEO_FORMATS = {
+  // Instagram Reels / TikTok / Stories
+  'reels': {
+    name: 'Instagram Reels',
+    width: 1080,
+    height: 1920,
+    aspectRatio: '9:16',
+    icon: '📱'
+  },
+  // Instagram Feed (Square)
+  'feed_square': {
+    name: 'Instagram Feed (مربع)',
+    width: 1080,
+    height: 1080,
+    aspectRatio: '1:1',
+    icon: '⬜'
+  },
+  // Instagram Feed (Portrait)
+  'feed_portrait': {
+    name: 'Instagram Feed (عمودي)',
+    width: 1080,
+    height: 1350,
+    aspectRatio: '4:5',
+    icon: '📋'
+  },
+  // Instagram Feed (Landscape)
+  'feed_landscape': {
+    name: 'Instagram Feed (أفقي)',
+    width: 1080,
+    height: 566,
+    aspectRatio: '1.91:1',
+    icon: '🖼️'
+  },
+  // YouTube Shorts
+  'youtube_shorts': {
+    name: 'YouTube Shorts',
+    width: 1080,
+    height: 1920,
+    aspectRatio: '9:16',
+    icon: '▶️'
+  },
+  // Facebook Feed
+  'facebook': {
+    name: 'Facebook',
+    width: 1080,
+    height: 1080,
+    aspectRatio: '1:1',
+    icon: '📘'
+  },
+  // Twitter/X
+  'twitter': {
+    name: 'Twitter/X',
+    width: 1280,
+    height: 720,
+    aspectRatio: '16:9',
+    icon: '🐦'
+  }
+};
+
 // News Script Prompt (Locked)
 const NEWS_SCRIPT_PROMPT = `أنت مذيع أخبار في إذاعة القدس.
 حوّل الخبر التالي إلى:
@@ -169,19 +229,21 @@ async function generateRadioMP3(voicePath, outputPath, jobId) {
 }
 
 /**
- * Generate 9:16 video
+ * Generate video for specified platform
  */
-async function generateVideo(audioPath, caption, outputPath, jobId) {
-  const bgPath = path.join(STORAGE_PATH, 'bg.jpg');
+async function generateVideo(audioPath, caption, outputPath, jobId, platform = 'reels') {
+  const format = VIDEO_FORMATS[platform] || VIDEO_FORMATS['reels'];
+  const { width, height } = format;
+
+  const bgPath = path.join(STORAGE_PATH, `bg_${width}x${height}.jpg`);
   const captionPath = path.join(STORAGE_PATH, `caption_${jobId}.txt`);
 
   // Write caption to file
   fs.writeFileSync(captionPath, caption, 'utf8');
 
-  // Create background image if not exists
+  // Create background image for this format if not exists
   if (!fs.existsSync(bgPath)) {
-    // Create a gradient background
-    const createBgCmd = `ffmpeg -y -f lavfi -i "color=c=#1a1a2e:s=1080x1920:d=1" -vframes 1 "${bgPath}"`;
+    const createBgCmd = `ffmpeg -y -f lavfi -i "color=c=#1a1a2e:s=${width}x${height}:d=1" -vframes 1 "${bgPath}"`;
     await execPromise(createBgCmd);
   }
 
@@ -203,34 +265,80 @@ async function generateVideo(audioPath, caption, outputPath, jobId) {
     .replace(/\]/g, '\\]')
     .substring(0, 200);
 
+  // Calculate text box position based on aspect ratio
+  const isVertical = height > width;
+  const isSquare = height === width;
+
+  let textBoxY, textBoxHeight, textY, fontSize;
+
+  if (isVertical) {
+    // Vertical (Reels, Stories)
+    textBoxY = 'ih-280';
+    textBoxHeight = 180;
+    textY = 'h-220';
+    fontSize = 32;
+  } else if (isSquare) {
+    // Square (Feed)
+    textBoxY = 'ih-200';
+    textBoxHeight = 140;
+    textY = 'h-150';
+    fontSize = 28;
+  } else {
+    // Horizontal (Landscape)
+    textBoxY = 'ih-120';
+    textBoxHeight = 100;
+    textY = 'h-90';
+    fontSize = 24;
+  }
+
   const ffmpegCmd = `ffmpeg -y -loop 1 -i "${bgPath}" -i "${audioPath}" \
-    -vf "scale=1080:1920,zoompan=z='min(zoom+0.0003,1.03)':d=${duration*25}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)',drawbox=y=ih-280:color=black@0.7:width=iw:height=180:t=fill,drawtext=text='${escapedCaption}':fontcolor=white:fontsize=32:x=(w-text_w)/2:y=h-220:font=Arial" \
-    -t ${duration} -c:v libx264 -preset fast -crf 23 -c:a aac -b:a 128k -shortest "${outputPath}"`;
+    -vf "scale=${width}:${height},zoompan=z='min(zoom+0.0003,1.03)':d=${duration*25}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)',drawbox=y=${textBoxY}:color=black@0.7:width=iw:height=${textBoxHeight}:t=fill,drawtext=text='${escapedCaption}':fontcolor=white:fontsize=${fontSize}:x=(w-text_w)/2:y=${textY}:font=Arial" \
+    -t ${duration} -c:v libx264 -preset fast -crf 23 -c:a aac -b:a 128k -pix_fmt yuv420p -shortest "${outputPath}"`;
 
   try {
     await execPromise(ffmpegCmd, { maxBuffer: 50 * 1024 * 1024 });
   } catch (err) {
     // Simpler fallback without text overlay
-    const simpleCmd = `ffmpeg -y -loop 1 -i "${bgPath}" -i "${audioPath}" -vf "scale=1080:1920" -t ${duration} -c:v libx264 -preset fast -c:a aac -shortest "${outputPath}"`;
+    const simpleCmd = `ffmpeg -y -loop 1 -i "${bgPath}" -i "${audioPath}" -vf "scale=${width}:${height}" -t ${duration} -c:v libx264 -preset fast -c:a aac -pix_fmt yuv420p -shortest "${outputPath}"`;
     await execPromise(simpleCmd, { maxBuffer: 50 * 1024 * 1024 });
   }
 
   // Cleanup
   if (fs.existsSync(captionPath)) fs.unlinkSync(captionPath);
 
-  return outputPath;
+  return { path: outputPath, format };
+}
+
+/**
+ * Generate videos for multiple platforms
+ */
+async function generateMultipleVideos(audioPath, caption, jobId, platforms = ['reels']) {
+  const results = {};
+
+  for (const platform of platforms) {
+    const outputPath = path.join(VIDEO_PATH, `video_${jobId}_${platform}.mp4`);
+    const result = await generateVideo(audioPath, caption, outputPath, jobId, platform);
+    results[platform] = {
+      path: result.path,
+      url: `/storage/videos/video_${jobId}_${platform}.mp4`,
+      format: result.format
+    };
+  }
+
+  return results;
 }
 
 /**
  * Process news job
  */
-async function processNewsJob(newsText, jobId) {
+async function processNewsJob(newsText, jobId, platforms = ['reels']) {
   const status = {
     id: jobId,
     stage: 'init',
     progress: 0,
     error: null,
-    outputs: {}
+    outputs: {},
+    platforms: platforms
   };
 
   try {
@@ -256,17 +364,23 @@ async function processNewsJob(newsText, jobId) {
     await generateRadioMP3(voicePath, radioPath, jobId);
     status.outputs.radioPath = radioPath;
     status.outputs.radioUrl = `/storage/audio/radio_${jobId}.mp3`;
+    status.progress = 70;
+
+    // Stage 4: Generate videos for selected platforms
+    status.stage = 'video';
     status.progress = 75;
 
-    // Stage 4: Generate video
-    status.stage = 'video';
-    status.progress = 80;
-    const videoPath = path.join(VIDEO_PATH, `video_${jobId}.mp4`);
-    await generateVideo(radioPath, script.caption, videoPath, jobId);
-    status.outputs.videoPath = videoPath;
-    status.outputs.videoUrl = `/storage/videos/video_${jobId}.mp4`;
-    status.progress = 100;
+    const videoResults = await generateMultipleVideos(radioPath, script.caption, jobId, platforms);
+    status.outputs.videos = videoResults;
 
+    // For backward compatibility, set primary video
+    const primaryPlatform = platforms[0];
+    if (videoResults[primaryPlatform]) {
+      status.outputs.videoPath = videoResults[primaryPlatform].path;
+      status.outputs.videoUrl = videoResults[primaryPlatform].url;
+    }
+
+    status.progress = 100;
     status.stage = 'completed';
 
   } catch (err) {
@@ -291,10 +405,17 @@ app.get('/api/health', (req, res) => {
 });
 
 /**
+ * Get available video formats
+ */
+app.get('/api/formats', (req, res) => {
+  res.json(VIDEO_FORMATS);
+});
+
+/**
  * Generate news content
  */
 app.post('/api/generate', async (req, res) => {
-  const { newsText } = req.body;
+  const { newsText, platforms } = req.body;
 
   if (!newsText || newsText.trim().length < 10) {
     return res.status(400).json({
@@ -302,16 +423,26 @@ app.post('/api/generate', async (req, res) => {
     });
   }
 
+  // Validate platforms
+  let selectedPlatforms = platforms || ['reels'];
+  if (!Array.isArray(selectedPlatforms)) {
+    selectedPlatforms = [selectedPlatforms];
+  }
+  selectedPlatforms = selectedPlatforms.filter(p => VIDEO_FORMATS[p]);
+  if (selectedPlatforms.length === 0) {
+    selectedPlatforms = ['reels'];
+  }
+
   const jobId = uuidv4();
 
   // Start processing in background
-  jobs.set(jobId, { status: 'processing', progress: 0 });
+  jobs.set(jobId, { status: 'processing', progress: 0, platforms: selectedPlatforms });
 
   // Return job ID immediately
-  res.json({ jobId, status: 'processing' });
+  res.json({ jobId, status: 'processing', platforms: selectedPlatforms });
 
   // Process job
-  const result = await processNewsJob(newsText, jobId);
+  const result = await processNewsJob(newsText, jobId, selectedPlatforms);
   jobs.set(jobId, result);
 });
 
@@ -334,6 +465,7 @@ app.get('/api/job/:jobId', (req, res) => {
  */
 app.get('/api/download/:type/:jobId', (req, res) => {
   const { type, jobId } = req.params;
+  const platform = req.query.platform || 'reels';
 
   let filePath;
   let fileName;
@@ -342,8 +474,14 @@ app.get('/api/download/:type/:jobId', (req, res) => {
     filePath = path.join(AUDIO_PATH, `radio_${jobId}.mp3`);
     fileName = `qudscast_radio_${jobId}.mp3`;
   } else if (type === 'mp4') {
-    filePath = path.join(VIDEO_PATH, `video_${jobId}.mp4`);
-    fileName = `qudscast_video_${jobId}.mp4`;
+    // Try platform-specific file first
+    filePath = path.join(VIDEO_PATH, `video_${jobId}_${platform}.mp4`);
+    if (!fs.existsSync(filePath)) {
+      // Fallback to old format
+      filePath = path.join(VIDEO_PATH, `video_${jobId}.mp4`);
+    }
+    const formatName = VIDEO_FORMATS[platform]?.name || platform;
+    fileName = `qudscast_${platform}_${jobId}.mp4`;
   } else {
     return res.status(400).json({ error: 'نوع ملف غير صالح' });
   }

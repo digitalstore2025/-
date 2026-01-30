@@ -2,11 +2,26 @@
 
 import { useState, useEffect, useRef } from 'react';
 
+interface VideoFormat {
+  name: string;
+  width: number;
+  height: number;
+  aspectRatio: string;
+  icon: string;
+}
+
+interface VideoResult {
+  path: string;
+  url: string;
+  format: VideoFormat;
+}
+
 interface JobResult {
   id: string;
   stage: string;
   progress: number;
   error: string | null;
+  platforms?: string[];
   outputs: {
     script?: {
       intro: string;
@@ -17,8 +32,61 @@ interface JobResult {
     };
     radioUrl?: string;
     videoUrl?: string;
+    videos?: Record<string, VideoResult>;
   };
 }
+
+const VIDEO_FORMATS: Record<string, VideoFormat> = {
+  reels: {
+    name: 'Instagram Reels',
+    width: 1080,
+    height: 1920,
+    aspectRatio: '9:16',
+    icon: '📱'
+  },
+  feed_square: {
+    name: 'Instagram Feed (مربع)',
+    width: 1080,
+    height: 1080,
+    aspectRatio: '1:1',
+    icon: '⬜'
+  },
+  feed_portrait: {
+    name: 'Instagram Feed (عمودي)',
+    width: 1080,
+    height: 1350,
+    aspectRatio: '4:5',
+    icon: '📋'
+  },
+  feed_landscape: {
+    name: 'Instagram Feed (أفقي)',
+    width: 1080,
+    height: 566,
+    aspectRatio: '1.91:1',
+    icon: '🖼️'
+  },
+  youtube_shorts: {
+    name: 'YouTube Shorts',
+    width: 1080,
+    height: 1920,
+    aspectRatio: '9:16',
+    icon: '▶️'
+  },
+  facebook: {
+    name: 'Facebook',
+    width: 1080,
+    height: 1080,
+    aspectRatio: '1:1',
+    icon: '📘'
+  },
+  twitter: {
+    name: 'Twitter/X',
+    width: 1280,
+    height: 720,
+    aspectRatio: '16:9',
+    icon: '🐦'
+  }
+};
 
 export default function Home() {
   const [newsText, setNewsText] = useState('');
@@ -27,6 +95,8 @@ export default function Home() {
   const [result, setResult] = useState<JobResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['reels']);
+  const [activeVideoTab, setActiveVideoTab] = useState<string>('reels');
   const pollInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Poll for job status
@@ -42,6 +112,10 @@ export default function Home() {
             setIsProcessing(false);
             clearInterval(pollInterval.current!);
             showToast('تم الإنتاج بنجاح!');
+            // Set active tab to first generated platform
+            if (data.platforms?.length > 0) {
+              setActiveVideoTab(data.platforms[0]);
+            }
           } else if (data.stage === 'error') {
             setError(data.error);
             setIsProcessing(false);
@@ -67,9 +141,24 @@ export default function Home() {
     setTimeout(() => setToast(null), 3000);
   };
 
+  const togglePlatform = (platform: string) => {
+    setSelectedPlatforms(prev => {
+      if (prev.includes(platform)) {
+        if (prev.length === 1) return prev; // Keep at least one
+        return prev.filter(p => p !== platform);
+      }
+      return [...prev, platform];
+    });
+  };
+
   const handleGenerate = async () => {
     if (!newsText.trim() || newsText.length < 10) {
       showToast('يرجى إدخال نص الخبر (10 أحرف على الأقل)');
+      return;
+    }
+
+    if (selectedPlatforms.length === 0) {
+      showToast('يرجى اختيار منصة واحدة على الأقل');
       return;
     }
 
@@ -83,7 +172,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ newsText }),
+        body: JSON.stringify({ newsText, platforms: selectedPlatforms }),
       });
 
       const data = await response.json();
@@ -113,11 +202,15 @@ export default function Home() {
       script: 'كتابة السكربت الإخباري...',
       voice: 'توليد الصوت...',
       radio: 'إنتاج MP3 الإذاعي...',
-      video: 'إنتاج الفيديو...',
+      video: 'إنتاج الفيديوهات...',
       completed: 'اكتمل الإنتاج!',
       error: 'حدث خطأ',
     };
     return stages[stage] || stage;
+  };
+
+  const getAspectRatioStyle = (format: VideoFormat) => {
+    return { aspectRatio: `${format.width}/${format.height}` };
   };
 
   return (
@@ -157,10 +250,38 @@ export default function Home() {
             <span className="text-gray-500 text-sm">
               {newsText.length} حرف
             </span>
+          </div>
+        </div>
+
+        {/* Platform Selection */}
+        <div className="card mb-6 animate-slide-up">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+            <span className="text-accent">📲</span>
+            اختر المنصات
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {Object.entries(VIDEO_FORMATS).map(([key, format]) => (
+              <button
+                key={key}
+                onClick={() => togglePlatform(key)}
+                disabled={isProcessing}
+                className={`p-3 rounded-xl border transition-all duration-300 ${
+                  selectedPlatforms.includes(key)
+                    ? 'bg-accent/20 border-accent text-white'
+                    : 'bg-primary/30 border-white/10 text-gray-400 hover:border-white/30'
+                } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <div className="text-2xl mb-1">{format.icon}</div>
+                <div className="text-sm font-bold">{format.name}</div>
+                <div className="text-xs text-gray-500">{format.aspectRatio}</div>
+              </button>
+            ))}
+          </div>
+          <div className="mt-4 text-center">
             <button
               onClick={handleGenerate}
-              disabled={isProcessing || newsText.length < 10}
-              className={`btn-primary flex items-center gap-2 ${
+              disabled={isProcessing || newsText.length < 10 || selectedPlatforms.length === 0}
+              className={`btn-primary flex items-center gap-2 mx-auto ${
                 isProcessing ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
@@ -172,7 +293,7 @@ export default function Home() {
               ) : (
                 <>
                   <span>🎬</span>
-                  إنتاج المحتوى
+                  إنتاج المحتوى ({selectedPlatforms.length} منصة)
                 </>
               )}
             </button>
@@ -198,6 +319,11 @@ export default function Home() {
                 />
               </div>
             </div>
+            {result.platforms && (
+              <div className="text-sm text-gray-400">
+                المنصات: {result.platforms.map(p => VIDEO_FORMATS[p]?.icon || p).join(' ')}
+              </div>
+            )}
           </div>
         )}
 
@@ -270,31 +396,84 @@ export default function Home() {
               </div>
             )}
 
-            {/* Video Player */}
-            {result.outputs.videoUrl && (
+            {/* Video Players - Multi Platform */}
+            {result.outputs.videos && Object.keys(result.outputs.videos).length > 0 && (
               <div className="card">
                 <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                   <span className="text-accent">🎬</span>
-                  الفيديو (9:16)
+                  الفيديوهات
                 </h2>
-                <div className="bg-black rounded-xl overflow-hidden mb-4 max-w-sm mx-auto">
-                  <video
-                    controls
-                    src={result.outputs.videoUrl}
-                    className="w-full"
-                    style={{ aspectRatio: '9/16' }}
-                  />
+
+                {/* Platform Tabs */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {Object.entries(result.outputs.videos).map(([platform, video]) => (
+                    <button
+                      key={platform}
+                      onClick={() => setActiveVideoTab(platform)}
+                      className={`px-4 py-2 rounded-lg transition-all ${
+                        activeVideoTab === platform
+                          ? 'bg-accent text-white'
+                          : 'bg-primary/50 text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      {video.format.icon} {video.format.name}
+                    </button>
+                  ))}
                 </div>
-                <div className="text-center">
-                  <a
-                    href={`/api/download/mp4/${result.id}`}
-                    download
-                    className="btn-primary inline-flex items-center gap-2"
-                  >
-                    <span>⬇️</span>
-                    تحميل MP4
-                  </a>
-                </div>
+
+                {/* Active Video */}
+                {result.outputs.videos[activeVideoTab] && (
+                  <div className="animate-slide-up">
+                    <div
+                      className="bg-black rounded-xl overflow-hidden mb-4 mx-auto"
+                      style={{
+                        maxWidth: result.outputs.videos[activeVideoTab].format.height > result.outputs.videos[activeVideoTab].format.width ? '300px' : '100%'
+                      }}
+                    >
+                      <video
+                        key={activeVideoTab}
+                        controls
+                        src={result.outputs.videos[activeVideoTab].url}
+                        className="w-full"
+                        style={getAspectRatioStyle(result.outputs.videos[activeVideoTab].format)}
+                      />
+                    </div>
+                    <div className="text-center space-y-2">
+                      <div className="text-sm text-gray-400">
+                        {result.outputs.videos[activeVideoTab].format.width} x {result.outputs.videos[activeVideoTab].format.height}
+                        {' | '}
+                        {result.outputs.videos[activeVideoTab].format.aspectRatio}
+                      </div>
+                      <a
+                        href={`/api/download/mp4/${result.id}?platform=${activeVideoTab}`}
+                        download
+                        className="btn-primary inline-flex items-center gap-2"
+                      >
+                        <span>⬇️</span>
+                        تحميل {result.outputs.videos[activeVideoTab].format.name}
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {/* Download All */}
+                {Object.keys(result.outputs.videos).length > 1 && (
+                  <div className="mt-6 pt-4 border-t border-white/10">
+                    <h3 className="text-gold font-bold mb-3">تحميل جميع الصيغ:</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {Object.entries(result.outputs.videos).map(([platform, video]) => (
+                        <a
+                          key={platform}
+                          href={`/api/download/mp4/${result.id}?platform=${platform}`}
+                          download
+                          className="btn-secondary text-sm"
+                        >
+                          {video.format.icon} {video.format.aspectRatio}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
