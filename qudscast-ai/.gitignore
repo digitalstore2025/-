@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Generated files
+storage/audio/*.wav
+storage/audio/*.mp3
+storage/videos/*.mp4
+storage/script_*.txt
+storage/caption_*.txt
+storage/tts_*.py
+
+# Keep directory structure
+!storage/audio/.gitkeep
+!storage/videos/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Replit
+.cache/
+.config/
+.upm/
