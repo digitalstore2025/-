@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Open English Lab – American Accent</title>
+<meta name="description" content="Learn American English pronunciation in 180 days">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="oel-manifest.json">
+<style>
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e1a;--surface:#141929;--card:#1a2035;--border:#252d45;
+  --accent:#00d4aa;--accent2:#00b4d8;--danger:#ff4757;--warn:#ffa502;
+  --text:#e8eaf0;--text2:#8892a8;--text3:#5a6380;
+  --radius:14px;--shadow:0 4px 20px rgba(0,0,0,0.3);
+}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text)}
+body{display:flex;justify-content:center;align-items:stretch}
+
+/* ============================================
+   LAYOUT – SINGLE SCREEN
+   ============================================ */
+.app{width:100%;max-width:480px;display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
+
+/* TOP PROGRESS BAR */
+.top-bar{height:4px;background:var(--surface);position:relative;flex-shrink:0}
+.top-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s ease;border-radius:0 2px 2px 0}
+
+/* COACH AREA */
+.coach{padding:16px 18px;display:flex;align-items:center;gap:14px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.coach-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.coach-msg{font-size:.92rem;line-height:1.45;color:var(--text2);flex:1}
+.coach-msg b{color:var(--text);font-weight:600}
+
+/* DAY BADGE */
+.day-badge{text-align:center;padding:10px 0 2px;flex-shrink:0}
+.day-badge span{font-size:.75rem;color:var(--accent);background:rgba(0,212,170,.1);padding:4px 14px;border-radius:20px;font-weight:600;letter-spacing:.5px}
+
+/* MAIN CONTENT AREA */
+.main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.phase-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:10px;font-weight:700}
+.content-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 18px;width:100%;text-align:center;box-shadow:var(--shadow)}
+.content-title{font-size:1.5rem;font-weight:700;margin-bottom:6px;color:var(--text);line-height:1.3}
+.content-sub{font-size:.88rem;color:var(--text2);line-height:1.5;margin-top:8px}
+.content-ipa{font-size:2.2rem;font-weight:300;color:var(--accent);margin:12px 0;font-family:"Courier New",monospace}
+.word-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.word-chip{background:rgba(0,212,170,.1);color:var(--accent);padding:6px 16px;border-radius:20px;font-size:.88rem;font-weight:500}
+.sentence-box{background:var(--surface);border-left:3px solid var(--accent);padding:14px 16px;border-radius:0 var(--radius) var(--radius) 0;margin-top:14px;text-align:left;font-size:1.05rem;line-height:1.6;color:var(--text);font-style:italic}
+
+/* AUDIO VISUALIZER */
+.visualizer-wrap{width:100%;margin-top:14px;border-radius:10px;overflow:hidden;background:var(--surface);height:56px}
+canvas#visualizer{width:100%;height:56px;display:block}
+
+/* CONTROLS */
+.controls{padding:16px 20px 28px;display:flex;gap:10px;flex-shrink:0;background:var(--bg)}
+.btn{flex:1;padding:16px;font-size:1rem;font-weight:600;border:none;border-radius:50px;cursor:pointer;transition:all .15s;text-align:center;letter-spacing:.3px}
+.btn:active{transform:scale(.96);opacity:.85}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0e1a}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-outline{background:transparent;border:2px solid var(--border);color:var(--text2)}
+.btn-outline:active{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:10px 18px;font-size:.85rem;flex:none}
+.hidden{display:none!important}
+
+/* PROGRESS DASHBOARD */
+.dashboard{padding:14px 20px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0}
+.dashboard h3{font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:10px}
+.stat-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.stat-label{width:70px;font-size:.78rem;color:var(--text2);flex-shrink:0}
+.stat-bar{flex:1;height:6px;background:var(--card);border-radius:3px;overflow:hidden}
+.stat-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.fill-fluency{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.fill-r{background:#ff6b81}
+.fill-th{background:#ffa502}
+.fill-vowel{background:#70a1ff}
+.stat-val{font-size:.72rem;color:var(--text3);width:32px;text-align:right}
+
+/* TOEFL BADGE */
+.toefl-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,165,2,.12);color:var(--warn);padding:5px 12px;border-radius:20px;font-size:.72rem;font-weight:600;margin-top:8px}
+
+/* TIMER */
+.timer{font-size:.8rem;color:var(--text3);margin-top:8px;font-variant-numeric:tabular-nums}
+
+/* RECORDING PULSE */
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,71,87,.5)}50%{box-shadow:0 0 0 14px rgba(255,71,87,0)}}
+.recording .btn-danger{animation:pulse 1.2s infinite}
+
+/* SCORE DISPLAY */
+.score-display{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0}
+.score-circle{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:700;border:3px solid var(--accent);color:var(--accent)}
+.score-label{font-size:.8rem;color:var(--text2)}
+
+/* CHECKPOINT */
+.checkpoint-result{text-align:center;padding:10px}
+.checkpoint-result h2{color:var(--accent);margin-bottom:10px}
+
+/* SPLASH */
+.splash{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:opacity .5s}
+.splash.out{opacity:0;pointer-events:none}
+.splash-logo{font-size:4rem;margin-bottom:16px}
+.splash-title{font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.splash-sub{font-size:.85rem;color:var(--text3)}
+.splash-start{margin-top:30px}
+
+/* RESET SESSION LINK */
+.reset-link{font-size:.7rem;color:var(--text3);text-decoration:underline;cursor:pointer;margin-top:10px}
+
+/* PHASE STEPS */
+.phase-steps{display:flex;gap:6px;margin-bottom:14px}
+.phase-dot{width:8px;height:8px;border-radius:50%;background:var(--border)}
+.phase-dot.active{background:var(--accent)}
+.phase-dot.done{background:var(--accent);opacity:.5}
+
+/* LISTENING PLAYER */
+.listen-player{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px;background:var(--surface);border-radius:var(--radius)}
+.listen-player .play-btn{width:40px;height:40px;border-radius:50%;background:var(--accent);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;flex-shrink:0;border:none}
+.listen-waves{flex:1;display:flex;align-items:center;gap:2px;height:24px}
+.listen-wave{width:3px;border-radius:2px;background:var(--accent);opacity:.4;transition:height .2s}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- SPLASH SCREEN -->
+  <div class="splash" id="splash">
+    <div class="splash-logo">&#127911;</div>
+    <div class="splash-title">Open English Lab</div>
+    <div class="splash-sub">American Accent &middot; 180 Days</div>
+    <button class="btn btn-primary splash-start" id="splashStart" style="padding:14px 50px">
+      Start Learning
+    </button>
+    <div class="reset-link" id="resetAll">Reset All Progress</div>
+  </div>
+
+  <!-- TOP PROGRESS -->
+  <div class="top-bar"><div class="top-bar-fill" id="topBar" style="width:0%"></div></div>
+
+  <!-- COACH -->
+  <div class="coach">
+    <div class="coach-avatar">&#9792;</div>
+    <div class="coach-msg" id="coachMsg">Hello! Ready for today's session?</div>
+  </div>
+
+  <!-- DAY BADGE -->
+  <div class="day-badge">
+    <span id="dayBadge">DAY 1 &middot; WEEK 1</span>
+  </div>
+
+  <!-- PHASE STEPS -->
+  <div style="display:flex;justify-content:center;padding:4px 0">
+    <div class="phase-steps" id="phaseSteps">
+      <div class="phase-dot" data-phase="0"></div>
+      <div class="phase-dot" data-phase="1"></div>
+      <div class="phase-dot" data-phase="2"></div>
+      <div class="phase-dot" data-phase="3"></div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main" id="mainArea">
+    <div class="phase-label" id="phaseLabel">GET READY</div>
+    <div class="content-card" id="contentCard">
+      <div class="content-title" id="contentTitle">Welcome</div>
+      <div class="content-sub" id="contentSub">Tap below to begin today's session</div>
+    </div>
+    <div class="visualizer-wrap hidden" id="vizWrap">
+      <canvas id="visualizer"></canvas>
+    </div>
+  </div>
+
+  <!-- PROGRESS DASHBOARD -->
+  <div class="dashboard" id="dashboard">
+    <h3>Your Progress</h3>
+    <div class="stat-row"><span class="stat-label">Fluency</span><div class="stat-bar"><div class="stat-fill fill-fluency" id="barFluency" style="width:0%"></div></div><span class="stat-val" id="valFluency">0%</span></div>
+    <div class="stat-row"><span class="stat-label">R Sound</span><div class="stat-bar"><div class="stat-fill fill-r" id="barR" style="width:0%"></div></div><span class="stat-val" id="valR">0%</span></div>
+    <div class="stat-row"><span class="stat-label">TH Sound</span><div class="stat-bar"><div class="stat-fill fill-th" id="barTH" style="width:0%"></div></div><span class="stat-val" id="valTH">0%</span></div>
+    <div class="stat-row"><span class="stat-label">Vowels</span><div class="stat-bar"><div class="stat-fill fill-vowel" id="barVowel" style="width:0%"></div></div><span class="stat-val" id="valVowel">0%</span></div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls" id="controls">
+    <button class="btn btn-primary" id="mainBtn">Start Session</button>
+    <button class="btn btn-danger hidden" id="recBtn">Hold to Record</button>
+    <button class="btn btn-outline btn-sm hidden" id="skipBtn">Skip</button>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   Open English Lab – American Accent
+   Complete End-to-End System
+   All modules embedded – Zero external dependencies
+   ============================================================ */
+
+(function(){
+"use strict";
+
+/* ============================================
+   MODULE 1: STORAGE MANAGER (IndexedDB + localStorage fallback)
+   ============================================ */
+const Storage = {
+  _db: null,
+  DB_NAME: "OpenEnglishLab",
+  DB_VERSION: 1,
+
+  async init() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(this.DB_NAME, this.DB_VERSION);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains("recordings")) {
+          db.createObjectStore("recordings", { keyPath: "id", autoIncrement: true });
+        }
+        if (!db.objectStoreNames.contains("sessions")) {
+          db.createObjectStore("sessions", { keyPath: "day" });
+        }
+      };
+      req.onsuccess = (e) => { this._db = e.target.result; resolve(); };
+      req.onerror = () => { console.warn("IndexedDB failed, using localStorage"); resolve(); };
+    });
+  },
+
+  getState() {
+    try {
+      const raw = localStorage.getItem("oel_state");
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  },
+
+  saveState(state) {
+    localStorage.setItem("oel_state", JSON.stringify(state));
+  },
+
+  async saveSession(dayData) {
+    if (!this._db) return;
+    return new Promise((resolve) => {
+      const tx = this._db.transaction("sessions", "readwrite");
+      tx.objectStore("sessions").put(dayData);
+      tx.oncomplete = resolve;
+      tx.onerror = resolve;
+    });
+  },
+
+  async getSessions(fromDay, toDay) {
+    if (!this._db) return [];
+    return new Promise((resolve) => {
+      const tx = this._db.transaction("sessions", "readonly");
+      const store = tx.objectStore("sessions");
+      const results = [];
+      const req = store.openCursor();
+      req.onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          if (cursor.value.day >= fromDay && cursor.value.day <= toDay) {
+            results.push(cursor.value);
+          }
+          cursor.continue();
+        } else {
+          resolve(results);
+        }
+      };
+      req.onerror = () => resolve([]);
+    });
+  },
+
+  async saveRecording(blob, day) {
+    if (!this._db) return;
+    return new Promise((resolve) => {
+      const tx = this._db.transaction("recordings", "readwrite");
+      tx.objectStore("recordings").add({ day, blob, ts: Date.now() });
+      tx.oncomplete = resolve;
+      tx.onerror = resolve;
+    });
+  },
+
+  clearAll() {
+    localStorage.removeItem("oel_state");
+    if (this._db) {
+      const tx = this._db.transaction(["sessions", "recordings"], "readwrite");
+      tx.objectStore("sessions").clear();
+      tx.objectStore("recordings").clear();
+    }
+  }
+};
+
+/* ============================================
+   MODULE 2: CURRICULUM GENERATOR (180 Days)
+   ============================================ */
+const Curriculum = {
+  // 24 weeks of structured content
+  weekPlan: [
+    // MONTH 1: Foundation (Weeks 1-4)
+    { phase:"Foundation", ipa:["/æ/","/ɪ/"], focus:"Short Vowels A & I", sounds:["cat","sit","hat","bit","map","tip"] },
+    { phase:"Foundation", ipa:["/ʌ/","/ɛ/"], focus:"Short Vowels U & E", sounds:["cup","bed","bus","red","sun","pet"] },
+    { phase:"Foundation", ipa:["/ɑ/","/ɒ/"], focus:"Open Vowels", sounds:["hot","top","got","box","job","stop"] },
+    { phase:"Foundation", ipa:["/p/","/b/","/t/","/d/"], focus:"Stop Consonants", sounds:["pat","bat","top","dog","pen","big"] },
+    // MONTH 2: Core American Sounds (Weeks 5-8)
+    { phase:"Core Sounds", ipa:["/r/"], focus:"American R Sound", sounds:["red","car","run","far","road","river"] },
+    { phase:"Core Sounds", ipa:["/θ/","/ð/"], focus:"TH Sounds", sounds:["think","that","three","this","bath","other"] },
+    { phase:"Core Sounds", ipa:["/l/"], focus:"L Sound (Light & Dark)", sounds:["light","call","love","tall","long","bell"] },
+    { phase:"Core Sounds", ipa:["/r/","/l/"], focus:"R vs L Contrast", sounds:["right","light","red","led","rock","lock"] },
+    // MONTH 3: Vowel Mastery (Weeks 9-12)
+    { phase:"Vowel Mastery", ipa:["/iː/","/uː/"], focus:"Long Vowels", sounds:["see","too","free","blue","tree","food"] },
+    { phase:"Vowel Mastery", ipa:["/aɪ/","/aʊ/"], focus:"Diphthongs 1", sounds:["time","now","like","how","mine","out"] },
+    { phase:"Vowel Mastery", ipa:["/ɔɪ/","/eɪ/","/oʊ/"], focus:"Diphthongs 2", sounds:["boy","day","go","toy","say","know"] },
+    { phase:"Vowel Mastery", ipa:["/ə/"], focus:"The Schwa Sound", sounds:["about","again","today","away","ago","alone"] },
+    // MONTH 4: Connected Speech (Weeks 13-16)
+    { phase:"Connected Speech", ipa:["/f/","/v/","/s/","/z/"], focus:"Fricatives", sounds:["five","zero","safe","zoo","face","voice"] },
+    { phase:"Connected Speech", ipa:["/ʃ/","/ʒ/","/tʃ/","/dʒ/"], focus:"Affricates", sounds:["ship","measure","chip","judge","shape","vision"] },
+    { phase:"Connected Speech", ipa:["linking"], focus:"Linking Sounds", sounds:["turn_off","pick_up","go_out","come_in","take_it","put_on"] },
+    { phase:"Connected Speech", ipa:["stress"], focus:"Word Stress", sounds:["record","present","object","permit","produce","contract"] },
+    // MONTH 5: Fluency (Weeks 17-20)
+    { phase:"Fluency", ipa:["flap_t"], focus:"American Flap T", sounds:["water","better","butter","letter","city","party"] },
+    { phase:"Fluency", ipa:["reduction"], focus:"Reductions", sounds:["gonna","wanna","gotta","kinda","sorta","dunno"] },
+    { phase:"Fluency", ipa:["intonation"], focus:"Intonation Patterns", sounds:["question_rise","statement_fall","list_pattern","surprise","doubt","emphasis"] },
+    { phase:"Fluency", ipa:["rhythm"], focus:"Speech Rhythm", sounds:["I_want_to_GO","she_SAID_it","we_NEED_to_TALK","he_TOLD_me","they_CALLED_us","let_ME_know"] },
+    // MONTH 6: TOEFL Prep (Weeks 21-24)
+    { phase:"TOEFL Prep", ipa:["clusters"], focus:"Consonant Clusters", sounds:["street","spring","scratch","splash","strong","strange"] },
+    { phase:"TOEFL Prep", ipa:["academic"], focus:"Academic Vocabulary", sounds:["analyze","research","compare","evaluate","discuss","explain"] },
+    { phase:"TOEFL Prep", ipa:["extended"], focus:"Extended Speaking", sounds:["describe","summarize","argue","persuade","narrate","conclude"] },
+    { phase:"TOEFL Prep", ipa:["final"], focus:"Final Assessment", sounds:["fluency","accuracy","coherence","vocabulary","pronunciation","delivery"] }
+  ],
+
+  // Vocabulary banks per week theme
+  vocabBanks: {
+    0: [["apple","cat","map","hand","back"],["sit","big","fish","give","kid"],["hat","bag","sad","fan","man"],["tip","win","hit","bit","fix"]],
+    1: [["cup","bus","sun","run","fun"],["bed","red","ten","yes","get"],["mud","hug","cut","bug","nut"],["set","pen","leg","wet","net"]],
+    2: [["hot","top","box","job","got"],["stop","dog","fog","log","pot"],["not","lot","dot","hop","pop"],["rock","sock","lock","drop","shop"]],
+    3: [["pat","pen","pig","pot","put"],["bat","big","bag","bus","bed"],["top","two","ten","tip","tap"],["dog","day","did","do","dark"]],
+    4: [["red","run","rain","road","river"],["car","far","star","dark","park"],["real","room","rice","ring","read"],["more","door","floor","four","store"]],
+    5: [["think","three","throw","thick","thin"],["this","that","these","those","them"],["bath","math","path","cloth","south"],["other","mother","father","brother","weather"]],
+    6: [["light","love","long","live","look"],["call","tall","bell","full","cool"],["like","late","learn","lunch","life"],["ball","fall","still","well","will"]],
+    7: [["right","light","rest","list","race"],["lace","rock","lock","red","led"],["pray","play","free","flee","frame"],["flame","crowd","cloud","grow","glow"]],
+    8: [["see","tree","free","green","sleep"],["too","blue","food","moon","cool"],["need","keep","team","read","mean"],["room","pool","school","choose","move"]],
+    9: [["time","like","mine","five","nice"],["now","how","out","down","house"],["find","high","night","write","side"],["town","sound","about","found","round"]],
+    10:[["boy","toy","joy","point","noise"],["day","say","way","play","name"],["go","know","show","old","home"],["join","voice","oil","coin","choice"]],
+    11:[["about","again","today","away","ago"],["alone","above","among","asleep","afraid"],["banana","camera","chocolate","family","animal"],["support","collect","begin","before","beside"]],
+    12:[["five","voice","safe","view","very"],["zero","zone","size","maze","buzz"],["face","fast","feel","phone","four"],["rose","raise","lazy","easy","music"]],
+    13:[["ship","shape","shine","show","shop"],["measure","vision","usual","genre","beige"],["chip","chair","change","check","child"],["judge","jump","joke","join","just"]],
+    14:[["turn off","pick up","go out","come in","get up"],["take it","put on","look at","run out","hold on"],["wake up","sit down","stand up","move on","set up"],["work out","find out","give up","show up","bring in"]],
+    15:[["record","present","object","permit","increase"],["produce","project","progress","conduct","subject"],["concert","combine","compete","contain","debate"],["address","conflict","contrast","detail","rebel"]],
+    16:[["water","better","butter","letter","city"],["party","thirty","forty","meeting","getting"],["waiting","eating","writing","sitting","putting"],["bottom","cotton","kitten","button","little"]],
+    17:[["going to","want to","got to","kind of","sort of"],["don't know","let me","give me","could have","would have"],["should have","might have","must have","has to","used to"],["a lot of","because of","instead of","in front of","out of"]],
+    18:[["really?","excuse me?","are you sure?","what happened?","how come?"],["I see","of course","no way","sounds good","I agree"],["I think so","not really","maybe","exactly","absolutely"]],
+    19:[["important","education","technology","community","opportunity"],["experience","information","development","environment","government"],["situation","conversation","organization","communication","imagination"]],
+    20:[["street","spring","strong","strange","straight"],["scratch","splash","spread","stretch","stream"],["string","strike","strip","struggle","structure"],["spray","squeeze","scream","script","screen"]],
+    21:[["analyze","research","compare","evaluate","discuss"],["explain","describe","summarize","conclude","identify"],["demonstrate","investigate","determine","establish","interpret"],["significant","relevant","approach","perspective","evidence"]],
+    22:[["describe a place","tell a story","give an opinion","explain a process","compare two things"],["summarize a text","argue a point","persuade someone","narrate an event","conclude a talk"]],
+    23:[["fluency check","accuracy check","coherence check","vocabulary check","delivery check"]]
+  },
+
+  // Sentences per week
+  sentenceBanks: {
+    0:["The cat sat on the map.","This is a big fish.","She has a red hat.","Give me the tip."],
+    1:["I love the sun and fun.","The bed is red and soft.","He cut the nut in the mud.","Get the wet pen from the set."],
+    2:["The hot pot is on top.","Stop the dog in the fog.","Not a lot of dots.","Drop by the shop on the block."],
+    3:["Pat put the pen on the pot.","The big bat is in the bag.","Two tips on the table.","The dark dog did it today."],
+    4:["The red river runs through the rain.","My car is parked far from the star.","I read a real story in the room.","Open the door and see the floor."],
+    5:["I think three things are thick.","This is that thing over there.","Take a bath on the path south.","My mother and father like the weather."],
+    6:["The light of love lasts long.","Call the tall man by the bell.","I like to learn new things in life.","The ball will fall still in the well."],
+    7:["Turn right at the light near the rest stop.","This rock is locked behind the red door.","They pray and play in the free field.","The crowd under the cloud started to grow and glow."],
+    8:["I can see the green tree by the stream.","The blue moon shines on the cool pool.","We need to keep the team together.","Choose the room with the school view."],
+    9:["This time I like to find nice things at night.","How about going down to town now?","Write five lines on each side.","The round sound comes from the ground."],
+    10:["The boy enjoys his favorite toy.","I say we play every day.","I know the show starts at the old home.","The voice of joy fills the room with noise."],
+    11:["I was about to begin again today.","She was alone above the sleeping family.","The camera captured the chocolate banana.","We support the collection before the event."],
+    12:["Five safe faces feel very fine.","The zero zone has an easy size.","My phone has a fast view of the voice.","The lazy rose and the buzzy music played."],
+    13:["The ship showed a shiny shape.","The usual measure of vision is beige.","The child changed chairs and checked.","The judge just joined the joke."],
+    14:["Please turn off the light and come in.","Pick up the bag and put it on the table.","Wake up, stand up, and move on.","Find out what happened and show up early."],
+    15:["They will record the present concert today.","The project made progress on the subject.","We combine and compete in the debate.","The conflict and contrast show every detail."],
+    16:["The water is better with a little butter.","The city party starts at thirty past.","I am waiting and writing while sitting here.","The cotton button at the bottom is little."],
+    17:["I am going to want to get a kind of snack.","I don't know, let me give it a try.","She should have, could have, would have gone.","A lot of people used to go instead of staying."],
+    18:["Really? Are you sure about that?","Excuse me, I think so but not really.","No way! That sounds absolutely good to me.","Exactly, I agree with you of course."],
+    19:["This is an important educational technology.","The community has a great opportunity for experience.","Information and development shape our environment.","The conversation about communication took imagination."],
+    20:["The strong spring street was straight and strange.","Scratch the splash and spread the stretch.","The string strike made the structure struggle.","Spray and squeeze through the screen of the script."],
+    21:["Analyze the research and compare the evidence.","Evaluate and discuss the significant approach.","Describe and summarize the relevant perspective.","Investigate and determine the established interpretation."],
+    22:["Describe a place you visited last summer in detail.","Explain the process of making your favorite meal.","Compare two cities and give your opinion.","Summarize the main points and conclude your argument."],
+    23:["Speak for two minutes about your daily routine.","Tell me about a challenge you overcame recently.","Explain why education is important in your opinion.","Describe the most interesting place you have visited."]
+  },
+
+  // Coach messages per phase
+  coachMessages: {
+    listening: [
+      "Close your eyes. Listen to the American rhythm.",
+      "Pay attention to how words connect.",
+      "Notice the melody of the sentence.",
+      "Focus on the sounds, not the meaning."
+    ],
+    pronunciation: [
+      "Repeat after me. Slowly, then naturally.",
+      "Feel where your tongue touches.",
+      "Listen, then try. No rush.",
+      "Good. Now say it a bit faster."
+    ],
+    vocabulary: [
+      "Say each word clearly. One at a time.",
+      "Focus on the stressed syllable.",
+      "Try to sound natural, not perfect.",
+      "Good effort. Keep practicing."
+    ],
+    recording: [
+      "Read the sentence aloud. I am listening.",
+      "Speak at a comfortable pace.",
+      "Remember today's sounds. Apply them.",
+      "Take a breath, then speak clearly."
+    ],
+    complete: [
+      "Well done. See you tomorrow.",
+      "Good session. Rest your voice.",
+      "You're improving. Keep it up.",
+      "Another day closer to fluency."
+    ]
+  },
+
+  getDayContent(day) {
+    const week = Math.floor((day - 1) / 6);  // 0-indexed week (6 days/week incl review+test)
+    const dayInWeek = (day - 1) % 6;          // 0-5
+    const safeWeek = Math.min(week, 23);
+    const plan = this.weekPlan[safeWeek];
+
+    // Day types: 0-3 = build, 4 = review, 5 = checkpoint test
+    let dayType = "build";
+    if (dayInWeek === 4) dayType = "review";
+    if (dayInWeek === 5) dayType = "checkpoint";
+
+    // Get vocab (cycle through available)
+    const vBank = this.vocabBanks[safeWeek] || this.vocabBanks[0];
+    const vocabSet = vBank[Math.min(dayInWeek, vBank.length - 1)] || vBank[0];
+    const vocab = vocabSet.slice(0, 5);
+
+    // Get sentence
+    const sBank = this.sentenceBanks[safeWeek] || this.sentenceBanks[0];
+    const sentence = sBank[Math.min(dayInWeek, sBank.length - 1)] || sBank[0];
+
+    // IPA display
+    const ipaDisplay = plan.ipa.join(" & ");
+
+    // Coach random message
+    const randCoach = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    return {
+      day,
+      week: safeWeek + 1,
+      dayInWeek: dayInWeek + 1,
+      dayType,
+      phase: plan.phase,
+      focus: plan.focus,
+      ipa: ipaDisplay,
+      sounds: plan.sounds,
+      vocab,
+      sentence,
+      coachListening: randCoach(this.coachMessages.listening),
+      coachPronunciation: randCoach(this.coachMessages.pronunciation),
+      coachVocabulary: randCoach(this.coachMessages.vocabulary),
+      coachRecording: randCoach(this.coachMessages.recording),
+      coachComplete: randCoach(this.coachMessages.complete),
+      // For checkpoint/review
+      isCheckpoint: dayType === "checkpoint",
+      isReview: dayType === "review"
+    };
+  }
+};
+
+/* ============================================
+   MODULE 3: PRONUNCIATION ENGINE (Rule-Based)
+   ============================================ */
+const PronunciationEngine = {
+  thresholds: {
+    rms: 0.04,         // Minimum RMS for clarity
+    zcr_low: 5,        // Min ZCR for voiced sounds
+    zcr_high: 40,      // Max ZCR for fricatives
+    duration_min: 800,  // Min recording ms
+    duration_max: 15000,// Max recording ms
+    pitch_var: 0.3      // Acceptable pitch variation
+  },
+
+  analyze(audioData, sampleRate) {
+    if (!audioData || audioData.length === 0) return this._emptyResult();
+
+    const rms = this._calcRMS(audioData);
+    const zcr = this._calcZCR(audioData);
+    const duration = (audioData.length / sampleRate) * 1000;
+    const pitchStability = this._calcPitchStability(audioData, sampleRate);
+    const energy = this._calcEnergy(audioData);
+
+    // Scoring
+    const clarityScore = this._scoreCriteria(rms, this.thresholds.rms, 0.2);
+    const durationScore = (duration >= this.thresholds.duration_min && duration <= this.thresholds.duration_max) ? 100 : 40;
+    const stabilityScore = pitchStability * 100;
+    const energyScore = this._scoreCriteria(energy, 0.001, 0.05);
+
+    // Sound-specific heuristics
+    const rScore = this._scoreRSound(zcr, rms, pitchStability);
+    const thScore = this._scoreTHSound(zcr, rms);
+    const vowelScore = this._scoreVowels(rms, pitchStability, energy);
+
+    const overall = Math.round(
+      clarityScore * 0.3 +
+      durationScore * 0.15 +
+      stabilityScore * 0.25 +
+      energyScore * 0.1 +
+      rScore * 0.1 +
+      thScore * 0.1
+    );
+
+    return {
+      overall: Math.min(100, Math.max(0, overall)),
+      clarity: Math.round(clarityScore),
+      duration: Math.round(duration),
+      stability: Math.round(stabilityScore),
+      rSound: Math.round(rScore),
+      thSound: Math.round(thScore),
+      vowels: Math.round(vowelScore),
+      rms: rms.toFixed(4),
+      zcr,
+      energy: energy.toFixed(6),
+      passed: overall >= 40
+    };
+  },
+
+  _emptyResult() {
+    return { overall:0, clarity:0, duration:0, stability:0, rSound:0, thSound:0, vowels:0, rms:"0", zcr:0, energy:"0", passed:false };
+  },
+
+  _calcRMS(data) {
+    let sum = 0;
+    for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
+    return Math.sqrt(sum / data.length);
+  },
+
+  _calcZCR(data) {
+    let crossings = 0;
+    for (let i = 1; i < data.length; i++) {
+      if ((data[i] >= 0 && data[i-1] < 0) || (data[i] < 0 && data[i-1] >= 0)) crossings++;
+    }
+    return crossings;
+  },
+
+  _calcEnergy(data) {
+    let sum = 0;
+    for (let i = 0; i < data.length; i++) sum += Math.abs(data[i]);
+    return sum / data.length;
+  },
+
+  _calcPitchStability(data, sr) {
+    // Simple autocorrelation-based stability measure
+    const frameSize = Math.min(2048, data.length);
+    const frame = data.slice(0, frameSize);
+    let maxCorr = 0;
+    const minLag = Math.floor(sr / 500); // 500 Hz max
+    const maxLag = Math.floor(sr / 80);  // 80 Hz min
+
+    for (let lag = minLag; lag < Math.min(maxLag, frameSize / 2); lag++) {
+      let corr = 0;
+      for (let i = 0; i < frameSize - lag; i++) {
+        corr += frame[i] * frame[i + lag];
+      }
+      corr /= (frameSize - lag);
+      if (corr > maxCorr) maxCorr = corr;
+    }
+
+    const rmsVal = this._calcRMS(frame);
+    if (rmsVal < 0.01) return 0;
+    const normalized = maxCorr / (rmsVal * rmsVal);
+    return Math.min(1, Math.max(0, normalized));
+  },
+
+  _scoreCriteria(value, min, max) {
+    if (value < min) return Math.max(0, (value / min) * 50);
+    if (value > max) return 100;
+    return 50 + ((value - min) / (max - min)) * 50;
+  },
+
+  _scoreRSound(zcr, rms, stability) {
+    // R sound: moderate ZCR, good RMS, stable pitch
+    let score = 50;
+    if (rms > 0.05) score += 20;
+    if (zcr > 10 && zcr < 60) score += 15;
+    if (stability > 0.4) score += 15;
+    return Math.min(100, score);
+  },
+
+  _scoreTHSound(zcr, rms) {
+    // TH sound: higher ZCR (fricative), lower RMS
+    let score = 50;
+    if (zcr > 20) score += 25;
+    if (rms > 0.02 && rms < 0.15) score += 25;
+    return Math.min(100, score);
+  },
+
+  _scoreVowels(rms, stability, energy) {
+    let score = 50;
+    if (rms > 0.06) score += 20;
+    if (stability > 0.5) score += 15;
+    if (energy > 0.01) score += 15;
+    return Math.min(100, score);
+  },
+
+  // Self-learning: adjust thresholds based on history
+  adjustThresholds(sessions) {
+    if (!sessions || sessions.length < 3) return;
+    const avgRms = sessions.reduce((s, x) => s + parseFloat(x.rms || 0), 0) / sessions.length;
+    if (avgRms > 0.1) {
+      this.thresholds.rms = Math.min(0.08, this.thresholds.rms + 0.005);
+    } else if (avgRms < 0.03) {
+      this.thresholds.rms = Math.max(0.02, this.thresholds.rms - 0.005);
+    }
+  }
+};
+
+/* ============================================
+   MODULE 4: VOICE RECORDER
+   ============================================ */
+const VoiceRecorder = {
+  audioCtx: null,
+  analyser: null,
+  mediaRecorder: null,
+  stream: null,
+  source: null,
+  chunks: [],
+  rawData: [],
+  isRecording: false,
+  startTime: 0,
+  animFrame: null,
+
+  async init() {
+    if (this.stream) return true;
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      this.analyser = this.audioCtx.createAnalyser();
+      this.analyser.fftSize = 2048;
+      this.source = this.audioCtx.createMediaStreamSource(this.stream);
+      this.source.connect(this.analyser);
+      return true;
+    } catch (e) {
+      console.error("Mic init failed:", e);
+      return false;
+    }
+  },
+
+  startRecording() {
+    if (!this.stream) return false;
+    this.chunks = [];
+    this.rawData = [];
+    this.isRecording = true;
+    this.startTime = Date.now();
+
+    // MediaRecorder for blob
+    this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: this._getMimeType() });
+    this.mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) this.chunks.push(e.data); };
+    this.mediaRecorder.start(100);
+
+    // Raw data capture for analysis
+    this._captureRaw();
+    this._drawViz();
+    return true;
+  },
+
+  stopRecording() {
+    return new Promise((resolve) => {
+      this.isRecording = false;
+      if (this.animFrame) cancelAnimationFrame(this.animFrame);
+
+      if (this.mediaRecorder && this.mediaRecorder.state !== "inactive") {
+        this.mediaRecorder.onstop = () => {
+          const blob = new Blob(this.chunks, { type: this._getMimeType() });
+          const duration = Date.now() - this.startTime;
+          resolve({ blob, rawData: new Float32Array(this.rawData), duration, sampleRate: this.audioCtx.sampleRate });
+        };
+        this.mediaRecorder.stop();
+      } else {
+        resolve({ blob: null, rawData: new Float32Array(this.rawData), duration: 0, sampleRate: 44100 });
+      }
+    });
+  },
+
+  _getMimeType() {
+    if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) return "audio/webm;codecs=opus";
+    if (MediaRecorder.isTypeSupported("audio/webm")) return "audio/webm";
+    if (MediaRecorder.isTypeSupported("audio/mp4")) return "audio/mp4";
+    return "audio/webm";
+  },
+
+  _captureRaw() {
+    if (!this.isRecording) return;
+    const bufLen = this.analyser.fftSize;
+    const buf = new Float32Array(bufLen);
+    this.analyser.getFloatTimeDomainData(buf);
+    for (let i = 0; i < bufLen; i++) this.rawData.push(buf[i]);
+    requestAnimationFrame(() => this._captureRaw());
+  },
+
+  _drawViz() {
+    const canvas = document.getElementById("visualizer");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width = canvas.offsetWidth * 2;
+    const H = canvas.height = canvas.offsetHeight * 2;
+    ctx.scale(1, 1);
+
+    const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+
+    const draw = () => {
+      this.animFrame = requestAnimationFrame(draw);
+      if (!this.isRecording) {
+        ctx.fillStyle = "#141929";
+        ctx.fillRect(0, 0, W, H);
+        return;
+      }
+      this.analyser.getByteFrequencyData(dataArray);
+      ctx.fillStyle = "#141929";
+      ctx.fillRect(0, 0, W, H);
+
+      const barW = (W / dataArray.length) * 2.5;
+      let x = 0;
+      for (let i = 0; i < dataArray.length; i++) {
+        const h = (dataArray[i] / 255) * H;
+        const hue = (i / dataArray.length) * 120 + 150;
+        ctx.fillStyle = `hsla(${hue}, 80%, 55%, 0.8)`;
+        ctx.fillRect(x, H - h, barW - 1, h);
+        x += barW;
+      }
+    };
+    draw();
+  },
+
+  destroy() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(t => t.stop());
+      this.stream = null;
+    }
+    if (this.audioCtx && this.audioCtx.state !== "closed") {
+      this.audioCtx.close();
+      this.audioCtx = null;
+    }
+  }
+};
+
+/* ============================================
+   MODULE 5: COACH PERSONA (Text-to-Speech)
+   ============================================ */
+const Coach = {
+  voice: null,
+  rate: 0.88,
+  pitch: 1.05,
+
+  init() {
+    if (!window.speechSynthesis) return;
+    const loadVoices = () => {
+      const voices = speechSynthesis.getVoices();
+      // Prefer American English female voice
+      this.voice = voices.find(v => v.lang === "en-US" && v.name.toLowerCase().includes("female")) ||
+                   voices.find(v => v.lang === "en-US" && (v.name.toLowerCase().includes("samantha") || v.name.toLowerCase().includes("karen"))) ||
+                   voices.find(v => v.lang === "en-US") ||
+                   voices.find(v => v.lang.startsWith("en")) ||
+                   voices[0];
+    };
+    loadVoices();
+    speechSynthesis.onvoiceschanged = loadVoices;
+  },
+
+  speak(text) {
+    if (!window.speechSynthesis) return Promise.resolve();
+    return new Promise((resolve) => {
+      speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(text);
+      if (this.voice) utt.voice = this.voice;
+      utt.lang = "en-US";
+      utt.rate = this.rate;
+      utt.pitch = this.pitch;
+      utt.onend = resolve;
+      utt.onerror = resolve;
+      speechSynthesis.speak(utt);
+    });
+  },
+
+  speakWord(word) {
+    return this.speak(word);
+  },
+
+  speakSentence(sentence) {
+    return this.speak(sentence);
+  }
+};
+
+/* ============================================
+   MODULE 6: QA ENGINE (Multi-Pass Review)
+   ============================================ */
+const QAEngine = {
+  // 5-pass quality assurance
+  validate(result, content) {
+    const passes = [];
+
+    // Pass 1: Logic Check
+    passes.push({
+      name: "Logic",
+      ok: result.overall >= 0 && result.overall <= 100 && result.duration > 0,
+      detail: "Score range and duration valid"
+    });
+
+    // Pass 2: State Check
+    passes.push({
+      name: "State",
+      ok: result.rms !== undefined && result.zcr !== undefined,
+      detail: "All metrics computed"
+    });
+
+    // Pass 3: Edge Case Check
+    passes.push({
+      name: "Edge",
+      ok: result.duration >= 300 && result.clarity > 0,
+      detail: "Recording not too short, has audio content"
+    });
+
+    // Pass 4: Performance Check
+    passes.push({
+      name: "Performance",
+      ok: result.overall > 10,
+      detail: "Minimum performance threshold met"
+    });
+
+    // Pass 5: Final Consistency
+    const consistent = !(result.clarity > 80 && result.overall < 20);
+    passes.push({
+      name: "Final",
+      ok: consistent,
+      detail: "Scores internally consistent"
+    });
+
+    const allPassed = passes.every(p => p.ok);
+    const failedPasses = passes.filter(p => !p.ok);
+
+    return {
+      valid: allPassed,
+      passes,
+      failedPasses,
+      recommendation: allPassed ? "accept" : (failedPasses.length <= 2 ? "retry" : "reject")
+    };
+  }
+};
+
+/* ============================================
+   MODULE 7: CORRECTION PLAN GENERATOR
+   ============================================ */
+const CorrectionPlan = {
+  async generate(currentDay) {
+    const from = Math.max(1, currentDay - 7);
+    const sessions = await Storage.getSessions(from, currentDay);
+
+    if (sessions.length < 2) {
+      return { weakSounds: [], suggestion: "Keep practicing. More data needed for personalized plan.", adjustedContent: null };
+    }
+
+    // Average scores per sound
+    const avgR = sessions.reduce((s, x) => s + (x.rSound || 50), 0) / sessions.length;
+    const avgTH = sessions.reduce((s, x) => s + (x.thSound || 50), 0) / sessions.length;
+    const avgV = sessions.reduce((s, x) => s + (x.vowels || 50), 0) / sessions.length;
+
+    const scores = [
+      { sound: "R Sound", score: avgR, key: "r" },
+      { sound: "TH Sound", score: avgTH, key: "th" },
+      { sound: "Vowels", score: avgV, key: "vowel" }
+    ].sort((a, b) => a.score - b.score);
+
+    const weakSounds = scores.filter(s => s.score < 70).slice(0, 3);
+
+    let suggestion = "Your pronunciation is balanced. Keep building fluency.";
+    if (weakSounds.length > 0) {
+      suggestion = `Focus on: ${weakSounds.map(s => s.sound).join(", ")}. Extra practice will be added.`;
+    }
+
+    // Adjust thresholds
+    PronunciationEngine.adjustThresholds(sessions);
+
+    return { weakSounds, suggestion, scores };
+  }
+};
+
+/* ============================================
+   MODULE 8: TOEFL SPEAKING MODULE
+   ============================================ */
+const TOEFLModule = {
+  tasks: {
+    independent: [
+      "Describe a place in your city that you enjoy visiting. Explain why you like it.",
+      "Some people prefer to study alone. Others prefer to study with friends. Which do you prefer and why?",
+      "Talk about a person who has influenced your life. Explain how this person affected you.",
+      "Do you agree or disagree: It is better to have a few close friends than many casual friends. Explain.",
+      "Describe a skill you would like to learn. Why is this skill important to you?",
+      "What is the most important quality of a good teacher? Use details to support your answer.",
+      "If you could change one thing about your hometown, what would it be? Explain.",
+      "Do you prefer to eat at home or eat at a restaurant? Explain your preference.",
+      "Describe an event from your life that made you happy. Explain why.",
+      "Some people work better in the morning. Others work better at night. When do you work best?"
+    ],
+    integrated: [
+      "The university plans to close the library on weekends. A student disagrees. Summarize the student's opinion.",
+      "The reading describes a new campus policy. The student in the conversation has a different view. Explain.",
+      "The professor explains a concept about animal behavior. Summarize the main points.",
+      "The article discusses climate change effects. The lecture provides examples. Combine both sources.",
+      "A student proposes a new recycling program. Another student responds. Summarize the discussion."
+    ]
+  },
+
+  timeConfigs: {
+    short: { prep: 15, speak: 30 },
+    medium: { prep: 20, speak: 45 },
+    full: { prep: 30, speak: 60 }
+  },
+
+  getTask(day) {
+    const week = Math.floor((day - 1) / 6);
+    let difficulty = "short";
+    if (week >= 8) difficulty = "medium";
+    if (week >= 16) difficulty = "full";
+
+    const pool = week >= 12 ? [...this.tasks.independent, ...this.tasks.integrated] : this.tasks.independent;
+    const idx = (day - 1) % pool.length;
+
+    return {
+      question: pool[idx],
+      difficulty,
+      times: this.timeConfigs[difficulty],
+      isTOEFL: true
+    };
+  }
+};
+
+/* ============================================
+   MODULE 9: SELF-LEARNING OPTIMIZATION LOOP
+   ============================================ */
+const SelfLearning = {
+  async optimize(currentDay, latestResult) {
+    // Get last 7 sessions
+    const from = Math.max(1, currentDay - 7);
+    const sessions = await Storage.getSessions(from, currentDay);
+
+    if (sessions.length < 3) return { improved: false, message: "Building baseline..." };
+
+    // Trend analysis
+    const recent = sessions.slice(-3);
+    const older = sessions.slice(0, -3);
+
+    const recentAvg = recent.reduce((s, x) => s + (x.overall || 0), 0) / recent.length;
+    const olderAvg = older.length > 0 ? older.reduce((s, x) => s + (x.overall || 0), 0) / older.length : recentAvg;
+
+    const trend = recentAvg - olderAvg;
+    const improving = trend > 0;
+
+    // Adjust difficulty if needed
+    if (recentAvg > 80 && improving) {
+      PronunciationEngine.thresholds.rms += 0.003;
+    } else if (recentAvg < 40 && !improving) {
+      PronunciationEngine.thresholds.rms = Math.max(0.02, PronunciationEngine.thresholds.rms - 0.003);
+    }
+
+    return {
+      improved: improving,
+      trend: trend.toFixed(1),
+      recentAvg: Math.round(recentAvg),
+      message: improving ?
+        `You're improving! Average up by ${trend.toFixed(0)} points.` :
+        `Keep practicing. Focus on weak areas.`
+    };
+  }
+};
+
+/* ============================================
+   MODULE 10: APP STATE
+   ============================================ */
+const DEFAULT_STATE = {
+  currentDay: 1,
+  sessionStep: -1,   // -1=idle, 0=listening, 1=pronunciation, 2=vocab, 3=recording, 4=done, 5=toefl
+  scores: { fluency: 5, r: 5, th: 5, vowels: 5 },
+  totalSessions: 0,
+  lastSessionDate: null,
+  correctionPlan: null
+};
+
+let state = { ...DEFAULT_STATE };
+
+/* ============================================
+   MODULE 11: UI CONTROLLER
+   ============================================ */
+const UI = {
+  els: {},
+
+  init() {
+    this.els = {
+      topBar: document.getElementById("topBar"),
+      coachMsg: document.getElementById("coachMsg"),
+      dayBadge: document.getElementById("dayBadge"),
+      phaseLabel: document.getElementById("phaseLabel"),
+      phaseSteps: document.getElementById("phaseSteps"),
+      contentCard: document.getElementById("contentCard"),
+      contentTitle: document.getElementById("contentTitle"),
+      contentSub: document.getElementById("contentSub"),
+      mainArea: document.getElementById("mainArea"),
+      vizWrap: document.getElementById("vizWrap"),
+      dashboard: document.getElementById("dashboard"),
+      mainBtn: document.getElementById("mainBtn"),
+      recBtn: document.getElementById("recBtn"),
+      skipBtn: document.getElementById("skipBtn"),
+      barFluency: document.getElementById("barFluency"),
+      barR: document.getElementById("barR"),
+      barTH: document.getElementById("barTH"),
+      barVowel: document.getElementById("barVowel"),
+      valFluency: document.getElementById("valFluency"),
+      valR: document.getElementById("valR"),
+      valTH: document.getElementById("valTH"),
+      valVowel: document.getElementById("valVowel"),
+      splash: document.getElementById("splash"),
+      splashStart: document.getElementById("splashStart"),
+      resetAll: document.getElementById("resetAll")
+    };
+  },
+
+  setCoach(msg) { this.els.coachMsg.innerHTML = msg; },
+  setPhase(label) { this.els.phaseLabel.textContent = label; },
+  setProgress(pct) { this.els.topBar.style.width = pct + "%"; },
+
+  setDayBadge(day, week) {
+    this.els.dayBadge.textContent = `DAY ${day} \u00B7 WEEK ${week}`;
+  },
+
+  setPhaseSteps(activeIndex) {
+    const dots = this.els.phaseSteps.querySelectorAll(".phase-dot");
+    dots.forEach((d, i) => {
+      d.classList.toggle("active", i === activeIndex);
+      d.classList.toggle("done", i < activeIndex);
+    });
+  },
+
+  setContent(title, sub, extra) {
+    this.els.contentTitle.textContent = title;
+    this.els.contentSub.innerHTML = sub || "";
+    if (extra) {
+      const existing = this.els.contentCard.querySelector(".extra-content");
+      if (existing) existing.remove();
+      const div = document.createElement("div");
+      div.className = "extra-content";
+      div.innerHTML = extra;
+      this.els.contentCard.appendChild(div);
+    } else {
+      const existing = this.els.contentCard.querySelector(".extra-content");
+      if (existing) existing.remove();
+    }
+  },
+
+  showMainBtn(text) { this.els.mainBtn.textContent = text; this.els.mainBtn.classList.remove("hidden"); },
+  hideMainBtn() { this.els.mainBtn.classList.add("hidden"); },
+  showRecBtn(text) { this.els.recBtn.textContent = text || "Hold to Record"; this.els.recBtn.classList.remove("hidden"); },
+  hideRecBtn() { this.els.recBtn.classList.add("hidden"); },
+  showSkip() { this.els.skipBtn.classList.remove("hidden"); },
+  hideSkip() { this.els.skipBtn.classList.add("hidden"); },
+  showViz() { this.els.vizWrap.classList.remove("hidden"); },
+  hideViz() { this.els.vizWrap.classList.add("hidden"); },
+
+  showDashboard() { this.els.dashboard.classList.remove("hidden"); },
+  hideDashboard() { this.els.dashboard.classList.add("hidden"); },
+
+  updateDashboard() {
+    const s = state.scores;
+    const cap = (v) => Math.min(100, Math.max(0, Math.round(v)));
+    this.els.barFluency.style.width = cap(s.fluency) + "%";
+    this.els.barR.style.width = cap(s.r) + "%";
+    this.els.barTH.style.width = cap(s.th) + "%";
+    this.els.barVowel.style.width = cap(s.vowels) + "%";
+    this.els.valFluency.textContent = cap(s.fluency) + "%";
+    this.els.valR.textContent = cap(s.r) + "%";
+    this.els.valTH.textContent = cap(s.th) + "%";
+    this.els.valVowel.textContent = cap(s.vowels) + "%";
+  },
+
+  hideSplash() {
+    this.els.splash.classList.add("out");
+    setTimeout(() => this.els.splash.style.display = "none", 500);
+  },
+
+  setRecording(active) {
+    if (active) {
+      document.getElementById("app").classList.add("recording");
+      this.els.recBtn.textContent = "Recording...";
+    } else {
+      document.getElementById("app").classList.remove("recording");
+      this.els.recBtn.textContent = "Hold to Record";
+    }
+  }
+};
+
+/* ============================================
+   MODULE 12: SESSION ENGINE (Main Loop)
+   ============================================ */
+let currentContent = null;
+let sessionTimer = null;
+let timerSeconds = 0;
+let isTOEFLSession = false;
+
+function loadState() {
+  const saved = Storage.getState();
+  if (saved) {
+    state = { ...DEFAULT_STATE, ...saved };
+  }
+}
+
+function saveState() {
+  Storage.saveState(state);
+}
+
+function updateDisplay() {
+  const content = Curriculum.getDayContent(state.currentDay);
+  currentContent = content;
+  UI.setDayBadge(content.day, content.week);
+  UI.updateDashboard();
+}
+
+// Phase handlers
+async function startListeningPhase() {
+  state.sessionStep = 0;
+  UI.setPhase("PHASE 1: LISTENING");
+  UI.setPhaseSteps(0);
+  UI.setProgress(10);
+  UI.setCoach(currentContent.coachListening);
+
+  // Build listening UI
+  const listenHtml = `
+    <div class="listen-player">
+      <button class="play-btn" id="listenPlayBtn">&#9654;</button>
+      <div class="listen-waves" id="listenWaves"></div>
+    </div>
+    <div class="timer" id="listenTimer">0:00 / 1:00</div>
+  `;
+  UI.setContent("Background Listening", `Focus on American English rhythm and intonation.`, listenHtml);
+
+  // Generate fake wave bars
+  const wavesEl = document.getElementById("listenWaves");
+  if (wavesEl) {
+    for (let i = 0; i < 30; i++) {
+      const bar = document.createElement("div");
+      bar.className = "listen-wave";
+      bar.style.height = (Math.random() * 18 + 4) + "px";
+      wavesEl.appendChild(bar);
+    }
+  }
+
+  UI.showMainBtn("Next: Pronunciation");
+  UI.hideRecBtn();
+  UI.hideViz();
+
+  // Coach speaks the sentence as demo
+  Coach.speak("Listen carefully to the rhythm of American English. Notice how words connect together.");
+
+  // Timer simulation (1 minute for demo, represents 10 min)
+  let sec = 0;
+  const maxSec = 60;
+  clearInterval(sessionTimer);
+  sessionTimer = setInterval(() => {
+    sec++;
+    const timerEl = document.getElementById("listenTimer");
+    if (timerEl) {
+      timerEl.textContent = `${Math.floor(sec/60)}:${String(sec%60).padStart(2,"0")} / 1:00`;
+    }
+    // Animate waves
+    const waves = document.querySelectorAll(".listen-wave");
+    waves.forEach(w => { w.style.height = (Math.random() * 18 + 4) + "px"; });
+    if (sec >= maxSec) clearInterval(sessionTimer);
+  }, 1000);
+
+  // Play button speaks example sentence
+  setTimeout(() => {
+    const playBtn = document.getElementById("listenPlayBtn");
+    if (playBtn) {
+      playBtn.addEventListener("click", () => {
+        Coach.speakSentence(currentContent.sentence);
+      });
+    }
+  }, 100);
+}
+
+async function startPronunciationPhase() {
+  state.sessionStep = 1;
+  clearInterval(sessionTimer);
+  UI.setPhase("PHASE 2: PRONUNCIATION");
+  UI.setPhaseSteps(1);
+  UI.setProgress(35);
+  UI.setCoach(currentContent.coachPronunciation);
+
+  const soundsHtml = currentContent.sounds.map(s =>
+    `<span class="word-chip" onclick="Coach.speakWord('${s}')">${s}</span>`
+  ).join("");
+
+  UI.setContent(currentContent.focus,
+    `Today's IPA Target`,
+    `<div class="content-ipa">${currentContent.ipa}</div>
+     <div class="word-list">${soundsHtml}</div>
+     <p style="color:var(--text3);font-size:.75rem;margin-top:12px">Tap any word to hear it</p>`
+  );
+
+  UI.showMainBtn("Next: Vocabulary");
+  Coach.speak(`Today we practice ${currentContent.focus}. Listen and repeat.`);
+}
+
+async function startVocabPhase() {
+  state.sessionStep = 2;
+  UI.setPhase("PHASE 3: VOCABULARY");
+  UI.setPhaseSteps(2);
+  UI.setProgress(55);
+  UI.setCoach(currentContent.coachVocabulary);
+
+  const vocabHtml = currentContent.vocab.map(w =>
+    `<span class="word-chip" onclick="Coach.speakWord('${w}')">${w}</span>`
+  ).join("");
+
+  UI.setContent("Today's Words",
+    `Say each word clearly. Tap to hear pronunciation.`,
+    `<div class="word-list" style="margin-top:16px">${vocabHtml}</div>`
+  );
+
+  UI.showMainBtn("Next: Recording");
+  Coach.speak("Say each word clearly. One at a time. No rush.");
+}
+
+async function startRecordingPhase() {
+  state.sessionStep = 3;
+  UI.setPhase("PHASE 4: RECORDING");
+  UI.setPhaseSteps(3);
+  UI.setProgress(75);
+  UI.setCoach(currentContent.coachRecording);
+
+  UI.setContent("Read Aloud",
+    `Record yourself saying:`,
+    `<div class="sentence-box">"${currentContent.sentence}"</div>
+     <div class="timer" id="recTimer" style="margin-top:10px">Ready to record</div>`
+  );
+
+  // Init mic
+  const micReady = await VoiceRecorder.init();
+  if (!micReady) {
+    UI.setCoach("<b>Microphone access needed.</b> Please allow microphone access and try again.");
+    UI.showMainBtn("Retry Microphone");
+    return;
+  }
+
+  UI.hideMainBtn();
+  UI.showRecBtn("Hold to Record");
+  UI.showViz();
+
+  // Coach speaks the sentence first
+  await Coach.speakSentence(currentContent.sentence);
+}
+
+async function finishRecording(recordingData) {
+  UI.setRecording(false);
+  UI.hideRecBtn();
+  UI.setCoach("Analyzing your recording...");
+  UI.setPhase("ANALYZING");
+  UI.setContent("Processing", "Please wait...", "");
+
+  // Analyze pronunciation
+  const result = PronunciationEngine.analyze(recordingData.rawData, recordingData.sampleRate);
+
+  // QA validation
+  const qa = QAEngine.validate(result, currentContent);
+
+  if (qa.recommendation === "reject") {
+    UI.setCoach("The recording was too short or unclear. <b>Please try again.</b>");
+    UI.setContent("Try Again", "Hold the button and speak clearly.", "");
+    UI.showRecBtn("Hold to Record");
+    UI.showViz();
+    return;
+  }
+
+  if (qa.recommendation === "retry" && result.overall < 20) {
+    UI.setCoach("I could barely hear you. <b>Speak louder and try again.</b>");
+    UI.showRecBtn("Hold to Record");
+    UI.showViz();
+    return;
+  }
+
+  // Save recording
+  if (recordingData.blob) {
+    Storage.saveRecording(recordingData.blob, state.currentDay);
+  }
+
+  // Save session data
+  const sessionData = {
+    day: state.currentDay,
+    overall: result.overall,
+    clarity: result.clarity,
+    stability: result.stability,
+    rSound: result.rSound,
+    thSound: result.thSound,
+    vowels: result.vowels,
+    rms: result.rms,
+    zcr: result.zcr,
+    duration: result.duration,
+    ts: Date.now()
+  };
+  await Storage.saveSession(sessionData);
+
+  // Update scores with weighted average
+  const w = 0.3; // new session weight
+  state.scores.fluency = state.scores.fluency * (1-w) + result.overall * w;
+  state.scores.r = state.scores.r * (1-w) + result.rSound * w;
+  state.scores.th = state.scores.th * (1-w) + result.thSound * w;
+  state.scores.vowels = state.scores.vowels * (1-w) + result.vowels * w;
+
+  // Self-learning
+  const optimization = await SelfLearning.optimize(state.currentDay, result);
+
+  // Correction plan
+  const plan = await CorrectionPlan.generate(state.currentDay);
+  state.correctionPlan = plan;
+
+  // Show results - different for TOEFL practice vs regular session
+  if (isTOEFLSession) {
+    showTOEFLComplete(result, optimization, plan);
+  } else {
+    showSessionComplete(result, optimization, plan);
+  }
+}
+
+function showSessionComplete(result, optimization, plan) {
+  state.sessionStep = 4;
+  UI.setPhase("SESSION COMPLETE");
+  UI.setPhaseSteps(4);
+  UI.setProgress(100);
+  UI.hideViz();
+  UI.hideRecBtn();
+
+  const grade = result.overall >= 80 ? "Excellent!" :
+                result.overall >= 60 ? "Good job!" :
+                result.overall >= 40 ? "Keep practicing!" : "Try harder tomorrow.";
+
+  UI.setCoach(currentContent.coachComplete);
+
+  const planHtml = plan.weakSounds.length > 0 ?
+    `<div style="margin-top:12px;padding:10px;background:var(--surface);border-radius:8px;text-align:left;font-size:.82rem;color:var(--text2)">
+      <b style="color:var(--warn)">Focus Areas:</b><br>${plan.suggestion}
+    </div>` : "";
+
+  const optimHtml = optimization.message ?
+    `<div style="margin-top:8px;font-size:.78rem;color:var(--text3)">${optimization.message}</div>` : "";
+
+  UI.setContent(grade,
+    "",
+    `<div class="score-display">
+      <div class="score-circle">${result.overall}</div>
+      <div style="text-align:left">
+        <div class="score-label">Clarity: ${result.clarity}%</div>
+        <div class="score-label">R Sound: ${result.rSound}%</div>
+        <div class="score-label">TH Sound: ${result.thSound}%</div>
+        <div class="score-label">Vowels: ${result.vowels}%</div>
+      </div>
+    </div>
+    ${planHtml}
+    ${optimHtml}`
+  );
+
+  // Check if this is a checkpoint day
+  if (currentContent.isCheckpoint) {
+    UI.setPhase("CHECKPOINT TEST COMPLETE");
+  }
+
+  // Advance day
+  state.currentDay++;
+  state.totalSessions++;
+  state.lastSessionDate = new Date().toISOString().split("T")[0];
+  state.sessionStep = -1;
+  saveState();
+
+  UI.showDashboard();
+  UI.updateDashboard();
+
+  // Show button for next day or TOEFL practice
+  const week = Math.floor((state.currentDay - 2) / 6);
+  if (week >= 16) {
+    UI.showMainBtn("Start Day " + state.currentDay);
+    // Also show TOEFL option
+    UI.els.skipBtn.textContent = "TOEFL Practice";
+    UI.showSkip();
+  } else {
+    UI.showMainBtn("Start Day " + state.currentDay);
+  }
+
+  Coach.speak(grade + " " + currentContent.coachComplete);
+}
+
+function showTOEFLComplete(result, optimization, plan) {
+  // TOEFL practice completion - does NOT advance day or session counters
+  state.sessionStep = 4;
+  UI.setPhase("TOEFL PRACTICE COMPLETE");
+  UI.setProgress(100);
+  UI.hideViz();
+  UI.hideRecBtn();
+
+  const grade = result.overall >= 85 ? "Excellent!" :
+                result.overall >= 70 ? "Very Good!" :
+                result.overall >= 55 ? "Good!" : "Keep Practicing!";
+
+  UI.setCoach(grade + " Great work on the TOEFL practice!");
+
+  const planHtml = plan.weakSounds.length > 0 ?
+    `<div style="margin-top:12px;padding:10px;background:var(--surface);border-radius:8px;text-align:left;font-size:.82rem;color:var(--text2)">
+      <b style="color:var(--warn)">Focus Areas:</b><br>${plan.suggestion}
+    </div>` : "";
+
+  const optimHtml = optimization.message ?
+    `<div style="margin-top:8px;font-size:.78rem;color:var(--text3)">${optimization.message}</div>` : "";
+
+  UI.setContent(grade,
+    "TOEFL Practice Session",
+    `<div class="score-display">
+      <div class="score-circle">${result.overall}</div>
+      <div style="text-align:left">
+        <div class="score-label">Clarity: ${result.clarity}%</div>
+        <div class="score-label">R Sound: ${result.rSound}%</div>
+        <div class="score-label">TH Sound: ${result.thSound}%</div>
+        <div class="score-label">Vowels: ${result.vowels}%</div>
+      </div>
+    </div>
+    ${planHtml}
+    ${optimHtml}`
+  );
+
+  // Save state but DON'T advance day or session counters
+  saveState();
+
+  UI.showDashboard();
+  UI.updateDashboard();
+
+  // Show button for next day
+  UI.showMainBtn("Start Day " + state.currentDay);
+
+  // Reset TOEFL flag
+  isTOEFLSession = false;
+
+  Coach.speak(grade + " That was a great TOEFL practice session!");
+}
+
+// TOEFL Practice Session
+async function startTOEFLPractice() {
+  isTOEFLSession = true;
+  state.sessionStep = 5;
+  const task = TOEFLModule.getTask(state.currentDay);
+
+  UI.setPhase(`TOEFL SPEAKING (${task.difficulty.toUpperCase()})`);
+  UI.hideDashboard();
+  UI.hideSkip();
+  UI.setProgress(0);
+  UI.setCoach("This is a TOEFL Speaking practice. Read the question, prepare, then record your response.");
+
+  UI.setContent("TOEFL Speaking Task",
+    task.question,
+    `<div class="toefl-badge">&#9201; Prep: ${task.times.prep}s &middot; Speak: ${task.times.speak}s</div>
+     <div class="timer" id="toeflTimer">Preparation: ${task.times.prep}s</div>`
+  );
+
+  // Preparation countdown
+  let prepTime = task.times.prep;
+  clearInterval(sessionTimer);
+  sessionTimer = setInterval(() => {
+    prepTime--;
+    const el = document.getElementById("toeflTimer");
+    if (el) el.textContent = `Preparation: ${prepTime}s`;
+    if (prepTime <= 0) {
+      clearInterval(sessionTimer);
+      startTOEFLRecording(task);
+    }
+  }, 1000);
+
+  UI.hideMainBtn();
+  UI.hideRecBtn();
+}
+
+async function startTOEFLRecording(task) {
+  const micReady = await VoiceRecorder.init();
+  if (!micReady) {
+    UI.setCoach("Microphone needed for TOEFL practice.");
+    UI.showMainBtn("Continue");
+    isTOEFLSession = false;
+    return;
+  }
+
+  UI.setCoach("Start speaking now. Answer the question clearly.");
+  document.getElementById("toeflTimer").textContent = `Speaking: ${task.times.speak}s`;
+  UI.showViz();
+
+  // Auto-start recording
+  VoiceRecorder.startRecording();
+  UI.setRecording(true);
+
+  let speakTime = task.times.speak;
+  sessionTimer = setInterval(() => {
+    speakTime--;
+    const el = document.getElementById("toeflTimer");
+    if (el) el.textContent = `Speaking: ${speakTime}s`;
+    if (speakTime <= 0) {
+      clearInterval(sessionTimer);
+      VoiceRecorder.stopRecording().then(data => {
+        finishRecording(data);
+      });
+    }
+  }, 1000);
+}
+
+/* ============================================
+   MODULE 13: EVENT HANDLERS
+   ============================================ */
+function setupEvents() {
+  // Splash start
+  UI.els.splashStart.addEventListener("click", () => {
+    UI.hideSplash();
+    updateDisplay();
+    Coach.speak("Hello! Ready for today's session?");
+  });
+
+  // Reset
+  UI.els.resetAll.addEventListener("click", () => {
+    if (confirm("Reset all progress? This cannot be undone.")) {
+      Storage.clearAll();
+      state = { ...DEFAULT_STATE };
+      saveState();
+      location.reload();
+    }
+  });
+
+  // Main button
+  UI.els.mainBtn.addEventListener("click", () => {
+    if (state.sessionStep === -1) {
+      // Start session
+      const content = Curriculum.getDayContent(state.currentDay);
+      currentContent = content;
+
+      if (content.isCheckpoint) {
+        UI.setCoach("<b>Checkpoint Test!</b> Let's see how much you've improved.");
+      } else if (content.isReview) {
+        UI.setCoach("<b>Review Day.</b> Let's reinforce what you've learned.");
+      }
+
+      startListeningPhase();
+    } else if (state.sessionStep === 0) {
+      startPronunciationPhase();
+    } else if (state.sessionStep === 1) {
+      startVocabPhase();
+    } else if (state.sessionStep === 2) {
+      startRecordingPhase();
+    } else if (state.sessionStep === 3) {
+      // Retry microphone after recording phase failure
+      startRecordingPhase();
+    } else if (state.sessionStep === 4) {
+      // Next day
+      clearInterval(sessionTimer);
+      UI.hideDashboard();
+      UI.hideSkip();
+      updateDisplay();
+      state.sessionStep = -1;
+      UI.setPhase("GET READY");
+      UI.setProgress(0);
+      UI.setContent("Ready", `Tap below to begin Day ${state.currentDay}`);
+      UI.setCoach("Hello! Ready for today's session?");
+      UI.showMainBtn("Start Session");
+    } else if (state.sessionStep === 5) {
+      // Continue after TOEFL mic failure - return to post-session state
+      clearInterval(sessionTimer);
+      isTOEFLSession = false;
+      state.sessionStep = 4;
+      UI.setPhase("SESSION COMPLETE");
+      UI.setProgress(100);
+      UI.setContent("Ready", `Tap below to begin Day ${state.currentDay}`);
+      UI.setCoach("Ready for the next session?");
+      UI.showMainBtn("Start Day " + state.currentDay);
+      UI.showDashboard();
+      UI.updateDashboard();
+    }
+  });
+
+  // Record button – pointer events for mobile + desktop
+  let recStarted = false;
+
+  const startRec = (e) => {
+    e.preventDefault();
+    if (recStarted) return;
+    recStarted = true;
+    VoiceRecorder.startRecording();
+    UI.setRecording(true);
+    timerSeconds = 0;
+    clearInterval(sessionTimer);
+    sessionTimer = setInterval(() => {
+      timerSeconds++;
+      const el = document.getElementById("recTimer");
+      if (el) el.textContent = `Recording: ${timerSeconds}s`;
+    }, 1000);
+  };
+
+  const stopRec = (e) => {
+    e.preventDefault();
+    if (!recStarted) return;
+    recStarted = false;
+    clearInterval(sessionTimer);
+    VoiceRecorder.stopRecording().then(data => {
+      finishRecording(data);
+    });
+  };
+
+  UI.els.recBtn.addEventListener("mousedown", startRec);
+  UI.els.recBtn.addEventListener("mouseup", stopRec);
+  UI.els.recBtn.addEventListener("mouseleave", (e) => { if (recStarted) stopRec(e); });
+  UI.els.recBtn.addEventListener("touchstart", startRec, { passive: false });
+  UI.els.recBtn.addEventListener("touchend", stopRec, { passive: false });
+  UI.els.recBtn.addEventListener("touchcancel", stopRec, { passive: false });
+
+  // Skip / TOEFL button
+  UI.els.skipBtn.addEventListener("click", () => {
+    if (UI.els.skipBtn.textContent === "TOEFL Practice") {
+      startTOEFLPractice();
+    }
+  });
+}
+
+/* ============================================
+   MODULE 14: PWA REGISTRATION
+   ============================================ */
+function registerSW() {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./oel-sw.js").catch(err => {
+      console.log("SW registration failed:", err);
+    });
+  }
+}
+
+/* ============================================
+   MODULE 15: BOOT SEQUENCE
+   ============================================ */
+async function boot() {
+  // 1. Init storage
+  await Storage.init();
+
+  // 2. Load state
+  loadState();
+
+  // 3. Init UI
+  UI.init();
+
+  // 4. Init Coach
+  Coach.init();
+
+  // 5. Setup events
+  setupEvents();
+
+  // 6. Update display
+  updateDisplay();
+  UI.updateDashboard();
+  UI.showDashboard();
+
+  // 7. Register service worker
+  registerSW();
+
+  // 8. Show splash or resume
+  if (state.totalSessions > 0) {
+    UI.els.splashStart.textContent = `Continue Day ${state.currentDay}`;
+  }
+
+  console.log("Open English Lab booted. Day:", state.currentDay);
+}
+
+// Expose Coach globally for inline onclick handlers
+window.Coach = Coach;
+
+// Start
+boot();
+
+})();
+</script>
+
+</body>
+</html>
