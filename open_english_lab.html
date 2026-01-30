@@ -1399,6 +1399,8 @@ function showTOEFLComplete(result, optimization, plan) {
   state.sessionStep = 4;
   UI.setPhase("TOEFL PRACTICE COMPLETE");
   UI.setProgress(100);
+  UI.hideViz();
+  UI.hideRecBtn();
 
   const grade = result.overall >= 85 ? "Excellent!" :
                 result.overall >= 70 ? "Very Good!" :
@@ -1569,6 +1571,7 @@ function setupEvents() {
     } else if (state.sessionStep === 5) {
       // Continue after TOEFL mic failure - return to post-session state
       clearInterval(sessionTimer);
+      isTOEFLSession = false;
       state.sessionStep = 4;
       UI.setPhase("SESSION COMPLETE");
       UI.setProgress(100);
