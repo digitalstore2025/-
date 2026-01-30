@@ -1102,6 +1102,7 @@ const UI = {
 let currentContent = null;
 let sessionTimer = null;
 let timerSeconds = 0;
+let isTOEFLSession = false;
 
 function loadState() {
   const saved = Storage.getState();
@@ -1319,8 +1320,12 @@ async function finishRecording(recordingData) {
   const plan = await CorrectionPlan.generate(state.currentDay);
   state.correctionPlan = plan;
 
-  // Show results
-  showSessionComplete(result, optimization, plan);
+  // Show results - different for TOEFL practice vs regular session
+  if (isTOEFLSession) {
+    showTOEFLComplete(result, optimization, plan);
+  } else {
+    showSessionComplete(result, optimization, plan);
+  }
 }
 
 function showSessionComplete(result, optimization, plan) {
@@ -1389,8 +1394,59 @@ function showSessionComplete(result, optimization, plan) {
   Coach.speak(grade + " " + currentContent.coachComplete);
 }
 
+function showTOEFLComplete(result, optimization, plan) {
+  // TOEFL practice completion - does NOT advance day or session counters
+  state.sessionStep = 4;
+  UI.setPhase("TOEFL PRACTICE COMPLETE");
+  UI.setProgress(100);
+
+  const grade = result.overall >= 85 ? "Excellent!" :
+                result.overall >= 70 ? "Very Good!" :
+                result.overall >= 55 ? "Good!" : "Keep Practicing!";
+
+  UI.setCoach(grade + " Great work on the TOEFL practice!");
+
+  const planHtml = plan.weakSounds.length > 0 ?
+    `<div style="margin-top:12px;padding:10px;background:var(--surface);border-radius:8px;text-align:left;font-size:.82rem;color:var(--text2)">
+      <b style="color:var(--warn)">Focus Areas:</b><br>${plan.suggestion}
+    </div>` : "";
+
+  const optimHtml = optimization.message ?
+    `<div style="margin-top:8px;font-size:.78rem;color:var(--text3)">${optimization.message}</div>` : "";
+
+  UI.setContent(grade,
+    "TOEFL Practice Session",
+    `<div class="score-display">
+      <div class="score-circle">${result.overall}</div>
+      <div style="text-align:left">
+        <div class="score-label">Clarity: ${result.clarity}%</div>
+        <div class="score-label">R Sound: ${result.rSound}%</div>
+        <div class="score-label">TH Sound: ${result.thSound}%</div>
+        <div class="score-label">Vowels: ${result.vowels}%</div>
+      </div>
+    </div>
+    ${planHtml}
+    ${optimHtml}`
+  );
+
+  // Save state but DON'T advance day or session counters
+  saveState();
+
+  UI.showDashboard();
+  UI.updateDashboard();
+
+  // Show button for next day
+  UI.showMainBtn("Start Day " + state.currentDay);
+
+  // Reset TOEFL flag
+  isTOEFLSession = false;
+
+  Coach.speak(grade + " That was a great TOEFL practice session!");
+}
+
 // TOEFL Practice Session
 async function startTOEFLPractice() {
+  isTOEFLSession = true;
   state.sessionStep = 5;
   const task = TOEFLModule.getTask(state.currentDay);
 
@@ -1428,6 +1484,7 @@ async function startTOEFLRecording(task) {
   if (!micReady) {
     UI.setCoach("Microphone needed for TOEFL practice.");
     UI.showMainBtn("Continue");
+    isTOEFLSession = false;
     return;
   }
 
@@ -1494,6 +1551,9 @@ function setupEvents() {
       startVocabPhase();
     } else if (state.sessionStep === 2) {
       startRecordingPhase();
+    } else if (state.sessionStep === 3) {
+      // Retry microphone after recording phase failure
+      startRecordingPhase();
     } else if (state.sessionStep === 4) {
       // Next day
       clearInterval(sessionTimer);
@@ -1506,6 +1566,17 @@ function setupEvents() {
       UI.setContent("Ready", `Tap below to begin Day ${state.currentDay}`);
       UI.setCoach("Hello! Ready for today's session?");
       UI.showMainBtn("Start Session");
+    } else if (state.sessionStep === 5) {
+      // Continue after TOEFL mic failure - return to post-session state
+      clearInterval(sessionTimer);
+      state.sessionStep = 4;
+      UI.setPhase("SESSION COMPLETE");
+      UI.setProgress(100);
+      UI.setContent("Ready", `Tap below to begin Day ${state.currentDay}`);
+      UI.setCoach("Ready for the next session?");
+      UI.showMainBtn("Start Day " + state.currentDay);
+      UI.showDashboard();
+      UI.updateDashboard();
     }
   });
 
