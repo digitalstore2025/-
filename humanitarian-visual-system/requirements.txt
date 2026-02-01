@@ -1,0 +1,24 @@
+# Humanitarian Visual System - Requirements
+# نظام التنفيذ البصري الإنساني - المتطلبات
+
+# Core dependencies
+pyyaml>=6.0           # Configuration file parsing
+pillow>=10.0          # Image processing
+python-dateutil>=2.8  # Date handling
+
+# Optional: Enhanced metadata handling
+# exiftool              # External tool for EXIF manipulation
+# piexif>=1.1           # EXIF data manipulation
+
+# Optional: Video processing
+# ffmpeg-python>=0.2    # Video processing wrapper
+# moviepy>=1.0          # Video editing
+
+# Optional: Web interface
+# flask>=3.0            # Web framework
+# gunicorn>=21.0        # WSGI server
+
+# Development
+# pytest>=7.0           # Testing
+# black>=23.0           # Code formatting
+# mypy>=1.0             # Type checking
