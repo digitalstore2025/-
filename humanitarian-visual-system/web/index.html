@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التنفيذ البصري الإنساني | Humanitarian Visual System</title>
+    <style>
+        :root {
+            --primary: #C41E3A;
+            --primary-dark: #9B1B30;
+            --secondary: #2C3E50;
+            --success: #27AE60;
+            --warning: #F39C12;
+            --danger: #E74C3C;
+            --light: #ECF0F1;
+            --white: #FFFFFF;
+            --text: #2C3E50;
+            --border: #BDC3C7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .logo-text h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .nav {
+            background: var(--secondary);
+            padding: 0 2rem;
+        }
+
+        .nav ul {
+            display: flex;
+            list-style: none;
+            gap: 0;
+        }
+
+        .nav li a {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .nav li a:hover,
+        .nav li a.active {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .main {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .quick-action {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: var(--light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-action:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .quick-action-icon {
+            width: 35px;
+            height: 35px;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quick-action:hover .quick-action-icon {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        .content {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--white);
+        }
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .asset-card {
+            background: var(--light);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .asset-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .asset-thumb {
+            height: 120px;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2rem;
+        }
+
+        .asset-info {
+            padding: 0.75rem;
+        }
+
+        .asset-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .asset-meta {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .asset-status {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-top: 0.5rem;
+        }
+
+        .status-approved {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #FFF3CD;
+            color: #856404;
+        }
+
+        .status-rejected {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+
+        .panel {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .panel h3 {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .check-pass {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .check-fail {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .check-warning {
+            background: var(--warning);
+            color: var(--white);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .workflow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: var(--light);
+            border-radius: 8px;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .step-number.completed {
+            background: var(--success);
+        }
+
+        .footer {
+            background: var(--secondary);
+            color: var(--white);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .footer p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .warning-banner {
+            background: #FFF3CD;
+            border: 1px solid #FFEEBA;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .warning-icon {
+            font-size: 1.5rem;
+        }
+
+        .warning-text h4 {
+            color: #856404;
+            margin-bottom: 0.25rem;
+        }
+
+        .warning-text p {
+            font-size: 0.85rem;
+            color: #856404;
+        }
+
+        @media (max-width: 1200px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+            .sidebar, .panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🌙</div>
+            <div class="logo-text">
+                <h1>الهلال الأحمر التركي</h1>
+                <p>نظام التنفيذ البصري الإنساني - غزة</p>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span>اليوم: 15</span>
+            </div>
+            <div class="status-indicator">
+                <span>مواد اليوم: 47</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="#" class="active">لوحة التحكم</a></li>
+            <li><a href="#">استيراد المواد</a></li>
+            <li><a href="#">المراجعة الأخلاقية</a></li>
+            <li><a href="#">المونتاج</a></li>
+            <li><a href="#">الأرشيف</a></li>
+            <li><a href="#">التقارير</a></li>
+        </ul>
+    </nav>
+
+    <main class="main">
+        <aside class="sidebar">
+            <h3>الإجراءات السريعة</h3>
+
+            <div class="quick-action">
+                <div class="quick-action-icon">📥</div>
+                <div>
+                    <strong>استيراد ملفات</strong>
+                    <small style="display: block; font-size: 0.75rem;">من بطاقة الذاكرة</small>
+                </div>
+            </div>
+
+            <div class="quick-action">
+                <div class="quick-action-icon">✓</div>
+                <div>
+                    <strong>مراجعة أخلاقية</strong>
+                    <small style="display: block; font-size: 0.75rem;">12 مادة معلقة</small>
+                </div>
+            </div>
+
+            <div class="quick-action">
+                <div class="quick-action-icon">📤</div>
+                <div>
+                    <strong>تصدير للنشر</strong>
+                    <small style="display: block; font-size: 0.75rem;">H.264 / 1080p</small>
+                </div>
+            </div>
+
+            <div class="quick-action">
+                <div class="quick-action-icon">💾</div>
+                <div>
+                    <strong>نسخ احتياطي</strong>
+                    <small style="display: block; font-size: 0.75rem;">آخر: منذ 2 ساعة</small>
+                </div>
+            </div>
+
+            <div class="quick-action">
+                <div class="quick-action-icon">📋</div>
+                <div>
+                    <strong>تقرير يومي</strong>
+                    <small style="display: block; font-size: 0.75rem;">PDF + Excel</small>
+                </div>
+            </div>
+        </aside>
+
+        <section class="content">
+            <div class="warning-banner">
+                <span class="warning-icon">⚠️</span>
+                <div class="warning-text">
+                    <h4>تذكير: القيود الأخلاقية</h4>
+                    <p>لا تصوير وجوه بدون موافقة | لا مواقع حساسة | لا محتوى صادم</p>
+                </div>
+            </div>
+
+            <div class="content-header">
+                <h2>مواد اليوم - Day 15</h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-primary">📥 استيراد جديد</button>
+                    <button class="btn btn-success">✓ مراجعة الكل</button>
+                </div>
+            </div>
+
+            <div class="asset-grid">
+                <div class="asset-card">
+                    <div class="asset-thumb">🎬</div>
+                    <div class="asset-info">
+                        <div class="asset-name">TRC_Gaza_AID_001.mp4</div>
+                        <div class="asset-meta">توزيع غذائي | 00:32</div>
+                        <span class="asset-status status-approved">✓ موافق</span>
+                    </div>
+                </div>
+
+                <div class="asset-card">
+                    <div class="asset-thumb">📷</div>
+                    <div class="asset-info">
+                        <div class="asset-name">TRC_Gaza_MED_015.jpg</div>
+                        <div class="asset-meta">خدمات طبية | 4.2MB</div>
+                        <span class="asset-status status-pending">⏳ قيد المراجعة</span>
+                    </div>
+                </div>
+
+                <div class="asset-card">
+                    <div class="asset-thumb">🎬</div>
+                    <div class="asset-info">
+                        <div class="asset-name">TRC_Gaza_SHL_003.mp4</div>
+                        <div class="asset-meta">إيواء | 00:45</div>
+                        <span class="asset-status status-approved">✓ موافق</span>
+                    </div>
+                </div>
+
+                <div class="asset-card">
+                    <div class="asset-thumb">📷</div>
+                    <div class="asset-info">
+                        <div class="asset-name">TRC_Gaza_WSH_007.jpg</div>
+                        <div class="asset-meta">مياه وصرف صحي | 3.8MB</div>
+                        <span class="asset-status status-rejected">✗ مرفوض - وجه</span>
+                    </div>
+                </div>
+
+                <div class="asset-card">
+                    <div class="asset-thumb">🎬</div>
+                    <div class="asset-info">
+                        <div class="asset-name">TRC_Gaza_AID_022.mp4</div>
+                        <div class="asset-meta">توزيع | 00:28</div>
+                        <span class="asset-status status-approved">✓ موافق</span>
+                    </div>
+                </div>
+
+                <div class="asset-card">
+                    <div class="asset-thumb">📷</div>
+                    <div class="asset-info">
+                        <div class="asset-name">TRC_Gaza_PSS_004.jpg</div>
+                        <div class="asset-meta">دعم نفسي | 5.1MB</div>
+                        <span class="asset-status status-pending">⏳ تحتاج موافقة</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <aside class="panel">
+            <h3>فحص أخلاقي سريع</h3>
+            <ul class="checklist">
+                <li>
+                    <span class="check-icon check-pass">✓</span>
+                    <span>لا وجوه مكشوفة</span>
+                </li>
+                <li>
+                    <span class="check-icon check-pass">✓</span>
+                    <span>لا إحداثيات GPS</span>
+                </li>
+                <li>
+                    <span class="check-icon check-pass">✓</span>
+                    <span>لا محتوى صادم</span>
+                </li>
+                <li>
+                    <span class="check-icon check-warning">!</span>
+                    <span>3 مواد تحتاج موافقة</span>
+                </li>
+                <li>
+                    <span class="check-icon check-fail">✗</span>
+                    <span>1 مادة مرفوضة</span>
+                </li>
+            </ul>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">47</div>
+                    <div class="stat-label">إجمالي المواد</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">38</div>
+                    <div class="stat-label">موافق عليها</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">قيد المراجعة</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">مرفوضة</div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 1.5rem;">سير العمل</h3>
+            <div class="workflow-steps">
+                <div class="workflow-step">
+                    <span class="step-number completed">1</span>
+                    <span>التصوير الميداني</span>
+                </div>
+                <div class="workflow-step">
+                    <span class="step-number completed">2</span>
+                    <span>الاستيراد والتنظيم</span>
+                </div>
+                <div class="workflow-step">
+                    <span class="step-number">3</span>
+                    <span>المراجعة الأخلاقية</span>
+                </div>
+                <div class="workflow-step">
+                    <span class="step-number">4</span>
+                    <span>المونتاج</span>
+                </div>
+                <div class="workflow-step">
+                    <span class="step-number">5</span>
+                    <span>النشر / الأرشفة</span>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="footer">
+        <p>الهلال الأحمر التركي | Turkish Red Crescent</p>
+        <p>نظام التنفيذ البصري الإنساني - غزة | Humanitarian Visual Execution System - Gaza Edition</p>
+        <p style="margin-top: 0.5rem; opacity: 0.6;">للاستخدام الإنساني فقط | For Humanitarian Use Only</p>
+    </footer>
+
+    <script>
+        // Simple interactivity
+        document.querySelectorAll('.quick-action').forEach(action => {
+            action.addEventListener('click', function() {
+                const actionName = this.querySelector('strong').textContent;
+                alert('جاري تنفيذ: ' + actionName);
+            });
+        });
+
+        document.querySelectorAll('.asset-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const fileName = this.querySelector('.asset-name').textContent;
+                alert('فتح: ' + fileName);
+            });
+        });
+
+        // Check all button
+        document.querySelector('.btn-success').addEventListener('click', function() {
+            alert('جاري مراجعة جميع المواد...\nسيتم إشعارك عند الانتهاء.');
+        });
+    </script>
+</body>
+</html>

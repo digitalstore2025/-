@@ -1,0 +1,165 @@
+# Camera Presets - Humanitarian Visual System
+# إعدادات الكاميرا - نظام التنفيذ البصري الإنساني
+#
+# الهدف: سرعة – ثبات – أقل معالجة لاحقة
+# Goal: Speed - Stability - Minimal post-processing
+
+version: "1.0"
+organization: "Turkish Red Crescent"
+
+# ═══════════════════════════════════════════════════════════════
+# MANDATORY CAMERA SETTINGS | إعدادات الكاميرا الإلزامية
+# ═══════════════════════════════════════════════════════════════
+
+mandatory_settings:
+  mode: "Manual + Auto ISO"
+  iso_max: 6400
+  shutter_min: "1/100"  # Minimum shutter speed
+  aperture_range:
+    min: "f/2.8"
+    max: "f/4"
+  white_balance: "Auto"
+  picture_profile: "Neutral"  # or "Flat"
+
+  audio:
+    sample_rate: 48000  # 48kHz
+    bit_depth: 24
+    format: "WAV"
+
+# ═══════════════════════════════════════════════════════════════
+# SCENE-SPECIFIC PRESETS | إعدادات خاصة بالمشاهد
+# ═══════════════════════════════════════════════════════════════
+
+presets:
+  outdoor_daylight:
+    name_ar: "خارجي - ضوء نهار"
+    name_en: "Outdoor Daylight"
+    iso: 100-400
+    shutter: "1/250"
+    aperture: "f/4"
+    notes: "Standard distribution scenes"
+
+  outdoor_overcast:
+    name_ar: "خارجي - غائم"
+    name_en: "Outdoor Overcast"
+    iso: 400-800
+    shutter: "1/125"
+    aperture: "f/2.8"
+    notes: "Cloudy conditions"
+
+  indoor_available_light:
+    name_ar: "داخلي - إضاءة طبيعية"
+    name_en: "Indoor Available Light"
+    iso: 800-3200
+    shutter: "1/100"
+    aperture: "f/2.8"
+    notes: "Medical tents, shelters"
+
+  indoor_low_light:
+    name_ar: "داخلي - إضاءة منخفضة"
+    name_en: "Indoor Low Light"
+    iso: 3200-6400
+    shutter: "1/60"
+    aperture: "f/2.8"
+    notes: "Use stabilization if available"
+
+  night_operations:
+    name_ar: "عمليات ليلية"
+    name_en: "Night Operations"
+    iso: 6400
+    shutter: "1/60"
+    aperture: "f/2.8"
+    notes: "Emergency response only"
+
+# ═══════════════════════════════════════════════════════════════
+# VIDEO SETTINGS | إعدادات الفيديو
+# ═══════════════════════════════════════════════════════════════
+
+video:
+  resolution: "1920x1080"
+  frame_rate: 25  # PAL standard
+  codec: "H.264"
+  bitrate: "50Mbps"
+  color_space: "Rec.709"
+  audio_channels: 2
+
+  # Avoid these settings
+  forbidden:
+    - slow_motion: true  # No slow motion for tragedy
+    - high_frame_rate: true  # 60fps+ not needed
+    - log_profiles: true  # Avoid LOG, use Neutral
+
+# ═══════════════════════════════════════════════════════════════
+# SHOT LOGIC | منطق التصوير
+# ═══════════════════════════════════════════════════════════════
+
+shot_sequence:
+  description_ar: "تسلسل اللقطات لكل مشهد"
+  description_en: "Shot sequence for each scene"
+
+  required_shots:
+    - type: "establishing"
+      name_ar: "لقطة تأسيسية"
+      name_en: "Establishing Shot"
+      frame: "wide"
+      purpose: "Context and environment"
+      duration_seconds: 5-10
+
+    - type: "action"
+      name_ar: "لقطة فعل"
+      name_en: "Action Shot"
+      frame: "medium"
+      purpose: "Aid in progress"
+      duration_seconds: 5-15
+
+    - type: "detail"
+      name_ar: "لقطة تفصيلية"
+      name_en: "Detail Shot"
+      frame: "close-up"
+      purpose: "Hands, movement, interaction"
+      duration_seconds: 3-5
+      subjects:
+        - "hands_receiving_aid"
+        - "supplies_being_distributed"
+        - "medical_equipment"
+        - "food_packages"
+
+# ═══════════════════════════════════════════════════════════════
+# FORBIDDEN ACTIONS | الأفعال الممنوعة
+# ═══════════════════════════════════════════════════════════════
+
+forbidden_actions:
+  - action: "reenactment"
+    reason_ar: "إعادة تمثيل"
+    reason_en: "No staging or reenactment"
+
+  - action: "emotional_request"
+    reason_ar: "طلب تفاعل عاطفي"
+    reason_en: "Do not request emotional reactions"
+
+  - action: "directing_subjects"
+    reason_ar: "توجيه المستفيد"
+    reason_en: "Do not direct beneficiaries"
+
+  - action: "face_without_consent"
+    reason_ar: "تصوير وجه بدون موافقة"
+    reason_en: "No faces without documented consent"
+
+# ═══════════════════════════════════════════════════════════════
+# SAFETY PROTOCOL | بروتوكول السلامة
+# ═══════════════════════════════════════════════════════════════
+
+safety:
+  risk_assessment:
+    before_shooting: true
+    during_shooting: true
+
+  exit_conditions:
+    - "risk_level_increase"
+    - "security_warning"
+    - "beneficiary_distress"
+    - "operational_interference"
+
+  immediate_exit:
+    description_ar: "الخروج الفوري إذا زاد الخطر"
+    description_en: "Exit scene immediately if risk increases"
