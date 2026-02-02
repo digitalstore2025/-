@@ -1,0 +1,252 @@
+# Humanitarian Visual System - Configuration
+# نظام التوثيق البصري الإنساني - الإعدادات
+#
+# This file contains default configuration.
+# هذا الملف يحتوي على الإعدادات الافتراضية.
+
+# ============================================
+# System Settings | إعدادات النظام
+# ============================================
+system:
+  version: "1.0.0"
+  language: "ar"  # ar | en
+  offline_mode: true
+  log_level: "INFO"
+
+# ============================================
+# Ethical Rules | القواعد الأخلاقية
+# ============================================
+ethical:
+  # Non-negotiable rules - cannot be disabled
+  # القواعد غير القابلة للتفاوض - لا يمكن تعطيلها
+  non_negotiable:
+    - no_beneficiary_endangerment
+    - no_faces_without_consent
+    - no_graphic_content
+    - no_sensitive_locations
+    - no_dramatic_effects
+    - auto_exclude_unethical
+
+  # Automatic actions
+  # الإجراءات التلقائية
+  auto_actions:
+    blur_faces: true           # طمس الوجوه تلقائياً
+    strip_metadata: true       # إزالة البيانات الحساسة
+    reject_graphic: true       # رفض المحتوى الصادم
+
+  # Face detection settings
+  # إعدادات كشف الوجوه
+  face_detection:
+    scale_factor: 1.1
+    min_neighbors: 5
+    min_size: [30, 30]
+    blur_kernel: [99, 99]
+    blur_sigma: 30
+    padding_ratio: 0.2
+
+# ============================================
+# Metadata Stripping | إزالة البيانات
+# ============================================
+metadata:
+  # Fields to always remove
+  # الحقول المحذوفة دائماً
+  remove_fields:
+    - GPSLatitude
+    - GPSLongitude
+    - GPSPosition
+    - GPSCoordinates
+    - GPSAltitude
+    - GPSTimeStamp
+    - GPSDateStamp
+    - SerialNumber
+    - CameraSerialNumber
+    - DeviceID
+    - UniqueID
+    - OwnerName
+    - Artist
+    - Copyright
+    - HostComputer
+    - Software
+    - MakerNote
+    - UserComment
+
+  # Fields to preserve
+  # الحقول المحفوظة
+  preserve_fields:
+    - ImageWidth
+    - ImageHeight
+    - Orientation
+    - ColorSpace
+    - Make
+    - Model
+    - DateTimeOriginal
+
+# ============================================
+# Caption Rules | قواعد التعليقات
+# ============================================
+captions:
+  max_length: 500
+  required_fields:
+    - what
+    - where
+    - intervention
+    - impact
+
+  # Forbidden terms (political, emotional, exaggeration)
+  # المصطلحات الممنوعة (سياسية، عاطفية، مبالغة)
+  forbidden_terms_ar:
+    - إرهاب
+    - عدو
+    - انتصار
+    - هزيمة
+    - أبطال
+    - شهيد
+    - مجزرة
+    - وحشي
+    - بربري
+    - إجرام
+
+  forbidden_terms_en:
+    - terrorist
+    - enemy
+    - victory
+    - defeat
+    - heroes
+    - martyr
+    - massacre
+    - savage
+    - barbaric
+    - criminal
+
+  # Valid general locations
+  # المواقع العامة المقبولة
+  valid_locations:
+    - غزة
+    - Gaza
+    - شمال غزة
+    - Northern Gaza
+    - جنوب غزة
+    - Southern Gaza
+    - وسط غزة
+    - Central Gaza
+    - رفح
+    - Rafah
+    - خان يونس
+    - Khan Younis
+    - دير البلح
+    - Deir al-Balah
+
+# ============================================
+# File Management | إدارة الملفات
+# ============================================
+files:
+  # Directory structure
+  # هيكل المجلدات
+  directories:
+    - RAW
+    - IMPORTED
+    - REVIEW
+    - APPROVED
+    - REJECTED
+    - REDACTED
+    - ARCHIVE
+    - EXPORT
+    - LOGS
+    - CAPTIONS
+
+  # Supported formats
+  # الصيغ المدعومة
+  formats:
+    image:
+      - .jpg
+      - .jpeg
+      - .png
+      - .webp
+      - .bmp
+      - .tiff
+    raw:
+      - .raw
+      - .cr2
+      - .nef
+      - .arw
+      - .dng
+    video:
+      - .mp4
+      - .mov
+      - .avi
+      - .mkv
+      - .mxf
+    audio:
+      - .mp3
+      - .wav
+      - .aac
+      - .m4a
+
+  # Filename pattern
+  # نمط أسماء الملفات
+  filename_pattern: "HV_D{day:02d}_{timestamp}_{original}"
+
+# ============================================
+# Logging | التسجيل
+# ============================================
+logging:
+  # Activity log is immutable (append-only)
+  # سجل النشاط غير قابل للتعديل (إضافة فقط)
+  immutable: true
+  hash_chain: true
+  retention_days: 365
+
+  # Activity types
+  # أنواع النشاط
+  activity_types:
+    - INIT
+    - IMPORT
+    - REVIEW
+    - BLUR
+    - STRIP
+    - APPROVE
+    - REJECT
+    - CAPTION
+    - ARCHIVE
+    - EXPORT
+    - BACKUP
+    - ERROR
+    - WARNING
+    - ACCESS
+    - CONFIG
+
+# ============================================
+# Dashboard | لوحة التحكم
+# ============================================
+dashboard:
+  host: "localhost"
+  port: 8501
+  theme: "light"
+  language: "ar"
+
+# ============================================
+# Workflow Rules | قواعد سير العمل
+# ============================================
+workflow:
+  # Valid state transitions
+  # الانتقالات المسموحة بين الحالات
+  transitions:
+    imported:
+      - reviewing
+      - rejected
+    reviewing:
+      - redacted
+      - approved
+      - rejected
+    redacted:
+      - approved
+      - rejected
+    approved:
+      - archived
+      - rejected
+    rejected: []    # Terminal state
+    archived: []    # Terminal state
+
+  # Cannot skip stages
+  # لا يمكن تجاوز المراحل
+  enforce_sequence: true

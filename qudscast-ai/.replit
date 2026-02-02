@@ -1,0 +1,50 @@
+run = "npm run start"
+language = "nodejs"
+entrypoint = "backend/server.js"
+
+[nix]
+channel = "stable-23_11"
+
+[env]
+PORT = "3001"
+NODE_ENV = "production"
+
+[packager]
+language = "nodejs"
+
+[packager.features]
+enabledForHosting = true
+packageSearch = true
+guessImports = true
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+[[ports]]
+localPort = 3001
+externalPort = 3001
+
+[deployment]
+run = ["sh", "-c", "npm run start"]
+deploymentTarget = "cloudrun"
+
+[workflows]
+runButton = "Start QudsCast AI"
+
+[[workflows.workflow]]
+name = "Start QudsCast AI"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd frontend && npm install && npm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run start"

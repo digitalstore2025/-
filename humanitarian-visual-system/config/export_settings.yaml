@@ -1,0 +1,195 @@
+# Export Settings - Humanitarian Visual System
+# إعدادات التصدير - نظام التنفيذ البصري الإنساني
+
+version: "1.0"
+organization: "Turkish Red Crescent"
+
+# ═══════════════════════════════════════════════════════════════
+# POST-PRODUCTION RULES | قواعد المونتاج
+# ═══════════════════════════════════════════════════════════════
+
+editing_rules:
+  allowed:
+    - action: "cut"
+      description_ar: "قص فقط"
+      description_en: "Cut only, no manipulation"
+
+    - action: "color_correction"
+      description_ar: "تصحيح الألوان"
+      description_en: "Color correction (NOT color grading)"
+      note: "Correct exposure/white balance only"
+
+    - action: "noise_reduction"
+      description_ar: "تقليل الضوضاء"
+      description_en: "Audio noise reduction for clarity"
+
+  forbidden:
+    - action: "slow_motion"
+      context: "tragedy"
+      description_ar: "لا حركة بطيئة للمآسي"
+      description_en: "No slow motion for tragic scenes"
+
+    - action: "cinematic_luts"
+      description_ar: "لا ألوان سينمائية"
+      description_en: "No cinematic color grading LUTs"
+
+    - action: "dramatic_effects"
+      description_ar: "لا مؤثرات درامية"
+      description_en: "No dramatic visual effects"
+
+    - action: "manipulation"
+      description_ar: "لا تلاعب بالصورة"
+      description_en: "No image manipulation or compositing"
+
+# ═══════════════════════════════════════════════════════════════
+# VIDEO OUTPUT SPECIFICATIONS | مواصفات تصدير الفيديو
+# ═══════════════════════════════════════════════════════════════
+
+video_output:
+  primary:
+    codec: "H.264"
+    container: "MP4"
+    resolution: "1920x1080"
+    frame_rate: 25
+    bitrate: "15-25 Mbps"
+    audio_codec: "AAC"
+    audio_bitrate: "320 kbps"
+
+  alternative:
+    codec: "H.265"
+    container: "MP4"
+    resolution: "1920x1080"
+    frame_rate: 25
+    bitrate: "10-15 Mbps"
+    note: "For bandwidth-limited distribution"
+
+  duration:
+    standard: "30-45 seconds"
+    extended: "60-90 seconds"
+    full_report: "3-5 minutes"
+    note: "Unless report requires longer"
+
+# ═══════════════════════════════════════════════════════════════
+# IMAGE OUTPUT SPECIFICATIONS | مواصفات تصدير الصور
+# ═══════════════════════════════════════════════════════════════
+
+image_output:
+  web:
+    format: "JPEG"
+    quality: 85
+    max_dimension: 2048
+    color_space: "sRGB"
+
+  print:
+    format: "TIFF"
+    color_space: "Adobe RGB"
+    resolution: 300  # DPI
+
+  archive:
+    format: "Original RAW + JPEG"
+    note: "Preserve original for legal purposes"
+
+# ═══════════════════════════════════════════════════════════════
+# AUDIO SPECIFICATIONS | مواصفات الصوت
+# ═══════════════════════════════════════════════════════════════
+
+audio:
+  recording:
+    sample_rate: 48000  # 48kHz
+    bit_depth: 24
+    channels: 2  # Stereo
+
+  export:
+    format: "AAC"
+    bitrate: 320  # kbps
+    normalization: -14  # LUFS
+
+  processing:
+    allowed:
+      - "noise_reduction"
+      - "level_normalization"
+      - "eq_cleanup"
+    forbidden:
+      - "dramatic_music_overlay"
+      - "emotional_sound_effects"
+      - "voice_manipulation"
+
+# ═══════════════════════════════════════════════════════════════
+# PLATFORM-SPECIFIC EXPORTS | تصدير خاص بالمنصات
+# ═══════════════════════════════════════════════════════════════
+
+platforms:
+  official_reports:
+    video:
+      resolution: "1920x1080"
+      codec: "H.264"
+      duration: "As needed"
+    image:
+      format: "JPEG"
+      quality: 95
+
+  social_media:
+    instagram:
+      video:
+        resolution: "1080x1080"
+        duration_max: 60
+      image:
+        resolution: "1080x1080"
+    twitter:
+      video:
+        resolution: "1280x720"
+        duration_max: 140
+    facebook:
+      video:
+        resolution: "1920x1080"
+        duration_max: 240
+
+  archive:
+    video:
+      codec: "ProRes 422"
+      resolution: "Original"
+    image:
+      format: "RAW + JPEG"
+    metadata:
+      include: true
+      sanitized: true
+
+# ═══════════════════════════════════════════════════════════════
+# METADATA HANDLING | معالجة البيانات الوصفية
+# ═══════════════════════════════════════════════════════════════
+
+metadata:
+  strip_before_export:
+    - "GPSLatitude"
+    - "GPSLongitude"
+    - "GPSPosition"
+    - "GPSAltitude"
+    - "Location"
+    - "DeviceSerialNumber"
+
+  preserve:
+    - "DateTimeOriginal"
+    - "Make"
+    - "Model"
+    - "CopyrightNotice"
+
+  add:
+    copyright: "Turkish Red Crescent"
+    credit: "TRC Media Team"
+    source: "Humanitarian Documentation"
+
+# ═══════════════════════════════════════════════════════════════
+# NAMING CONVENTIONS | اصطلاحات التسمية
+# ═══════════════════════════════════════════════════════════════
+
+naming:
+  pattern: "TRC_Gaza_{DATE}_{TYPE}_{SEQUENCE}"
+  date_format: "YYYYMMDD"
+  types:
+    - "AID"   # Aid distribution
+    - "MED"   # Medical
+    - "SHL"   # Shelter
+    - "WSH"   # WASH
+    - "PSS"   # Psychological support
+    - "GEN"   # General
+  example: "TRC_Gaza_20240115_AID_001.mp4"

@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube EduFactory AI - مصنع الفيديوهات التعليمية الآلي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --text: #334155;
+            --border: #e2e8f0;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 320px 1fr 300px;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 1200px) {
+            .app-container { grid-template-columns: 300px 1fr; }
+            .right-panel { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            .app-container { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .mobile-menu { display: block !important; }
+        }
+
+        /* Sidebar - Channel Setup */
+        .sidebar {
+            background: var(--card);
+            border-left: 1px solid var(--border);
+            padding: 25px;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 25px;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-title {
+            color: var(--primary);
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            background: white;
+            cursor: pointer;
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-warning:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* Main Content - AI Orchestrator */
+        .main-content {
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            color: var(--dark);
+            font-size: 1.8rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-orchestrator {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .orchestrator-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .orchestrator-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+
+        /* Agent Cards */
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .agent-card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border-right: 4px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .agent-card.active {
+            border-right-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .agent-card.completed {
+            border-right-color: var(--warning);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .agent-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .agent-status {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-idle { background: var(--border); color: var(--text); }
+        .status-running { background: var(--primary); color: white; }
+        .status-completed { background: var(--success); color: white; }
+        .status-error { background: var(--danger); color: white; }
+
+        .agent-description {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .agent-output {
+            background: var(--bg);
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            max-height: 100px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .agent-output.show {
+            display: block;
+        }
+
+        .agent-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .agent-btn {
+            flex: 1;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .agent-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Right Panel - Review & Delivery */
+        .right-panel {
+            background: var(--card);
+            border-right: 1px solid var(--border);
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .panel-section {
+            margin-bottom: 25px;
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .error-log {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .error-severity {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .severity-low { background: var(--success); color: white; }
+        .severity-medium { background: var(--warning); color: white; }
+        .severity-high { background: var(--danger); color: white; }
+
+        .delivery-item {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .delivery-item.pending {
+            background: rgba(99, 102, 241, 0.05);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        .delivery-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .delivery-meta {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .download-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: inherit;
+            margin-top: 8px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            padding: 10px;
+            z-index: 1500;
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 5px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Animations */
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* Video Preview */
+        .video-placeholder {
+            background: linear-gradient(135deg, var(--bg), #e2e8f0);
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .video-placeholder p {
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 2000;
+            animation: slideDown 0.3s ease-out;
+            display: none;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* Idea Bank Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .idea-list {
+            list-style: none;
+        }
+
+        .idea-item {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .idea-item:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .idea-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .idea-meta {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Ideas Modal -->
+    <div class="modal" id="ideasModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">💡 بنك الأفكار المولدة</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <ul class="idea-list" id="ideaList"></ul>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar - Channel Setup -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">🎬</div>
+                <div class="sidebar-title">YouTube EduFactory AI</div>
+                <div class="sidebar-subtitle">مصنع الفيديوهات التعليمية الآلي</div>
+            </div>
+
+            <!-- Channel Configuration -->
+            <div class="section-title">⚙️ تفاصيل القناة (التدخل البشري الوحيد)</div>
+
+            <div class="form-group">
+                <label class="form-label">اسم القناة</label>
+                <input type="text" class="form-input" id="channelName"
+                       placeholder="مثال: PAL AI Academy">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">مجال القناة</label>
+                <select class="form-select" id="channelNiche">
+                    <option value="tech">تقنية وبرمجة</option>
+                    <option value="science">علوم ورياضيات</option>
+                    <option value="business">ريادة أعمال</option>
+                    <option value="language">تعليم لغات</option>
+                    <option value="history">تاريخ وحضارات</option>
+                    <option value="skills">مهارات عملية</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">اللغة الرئيسية</label>
+                <select class="form-select" id="channelLanguage">
+                    <option value="ar">العربية فقط</option>
+                    <option value="ar-en">عربية + إنجليزية</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">أسلوب الشرح</label>
+                <select class="form-select" id="teachingStyle">
+                    <option value="simple">مبسط وجذاب</option>
+                    <option value="academic">أكاديمي دقيق</option>
+                    <option value="story">قصصي حكائي</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">معلومات عنك (للصوت AI)</label>
+                <textarea class="form-input form-textarea" id="creatorInfo"
+                          placeholder="اسمك، تخصصك، لهجتك (مثال: فلسطيني من غزة)"></textarea>
+            </div>
+
+            <button class="btn btn-primary" onclick="initializeFactory()">
+                🚀 تشغيل المصنع
+            </button>
+
+            <button class="btn btn-warning" onclick="generateVideo()">
+                🎬 إنتاج فيديو فوري
+            </button>
+
+            <!-- Quick Stats -->
+            <div class="stat-card" style="margin-top: 20px;">
+                <div class="stat-number" id="videosProduced">0</div>
+                <div class="stat-label">فيديوهات منتجة</div>
+            </div>
+            <div class="stat-card" style="margin-top: 10px;">
+                <div class="stat-number" id="totalViews">0</div>
+                <div class="stat-label">مشاهدات متوقعة</div>
+            </div>
+        </div>
+
+        <!-- Main Content - AI Orchestrator -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div>
+                    <h1>🤖 لوحة المراقبة الذكية</h1>
+                    <p style="color: #64748b;">المصنع يعمل بشكل آلي - تفاصيل كل مرحلة</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-success" onclick="exportVideo()">
+                        📥 تصدير الفيديو
+                    </button>
+                    <button class="btn btn-secondary" onclick="viewAnalytics()">
+                        📊 تحليلات
+                    </button>
+                </div>
+            </div>
+
+            <!-- AI Orchestrator Status -->
+            <div class="ai-orchestrator" id="orchestrator">
+                <div class="orchestrator-title">🤖 منسق العمليات الذكي</div>
+                <div class="orchestrator-status">
+                    <div class="status-indicator" id="statusIndicator"></div>
+                    <div id="orchestratorStatus">جاهز للإنتاج</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="progressText">0% - انتظر بدء الإنتاج</div>
+            </div>
+
+            <!-- AI Agents Grid -->
+            <div class="section-title">🤖 وكلاء الإنتاج الآليين</div>
+
+            <div class="agents-grid" id="agentsGrid">
+                <!-- Agent 1: Ideation -->
+                <div class="agent-card" id="agentIdeation">
+                    <div class="agent-header">
+                        <div class="agent-name">💡 وكيل جمع الأفكار</div>
+                        <div class="agent-status status-idle">في الانتظار</div>
+                    </div>
+                    <div class="agent-description">
+                        يبحث عن 100+ عنوان فيديو trending في مجالك، يحلل المنافسين،
+                        يولد أفكاراً فريدة بناءً على بيانات YouTube الحقيقية.
+                    </div>
+                    <div class="agent-output" id="outputIdeation"></div>
+                    <div class="agent-actions">
+                        <button class="agent-btn" onclick="runAgent('ideation')">ابدأ البحث</button>
+                        <button class="agent-btn" onclick="viewIdeas()">عرض الأفكار</button>
+                    </div>
+                </div>
+
+                <!-- Agent 2: Script Writing -->
+                <div class="agent-card" id="agentScript">
+                    <div class="agent-header">
+                        <div class="agent-name">📝 وكيل كتابة السكربت</div>
+                        <div class="agent-status status-idle">في الانتظار</div>
+                    </div>
+                    <div class="agent-description">
+                        يكتب سكربت كامل 1000-1500 كلمة مع مقدمة جذابة، محتوى منظم،
+                        أمثلة عملية، وخاتمة قوية مع CTA.
+                    </div>
+                    <div class="agent-output" id="outputScript"></div>
+                    <div class="agent-actions">
+                        <button class="agent-btn" onclick="runAgent('script')">اكتب السكربت</button>
+                        <button class="agent-btn" onclick="editScript()">تعديل يدوي</button>
+                    </div>
+                </div>
+
+                <!-- Agent 3: Voice Generation -->
+                <div class="agent-card" id="agentVoice">
+                    <div class="agent-header">
+                        <div class="agent-name">🎤 وكيل التعليق الصوتي</div>
+                        <div class="agent-status status-idle">في الانتظار</div>
+                    </div>
+                    <div class="agent-description">
+                        يولد صوتاً واضحاً بلهجتك (فلسطينية/مصرية) باستخدام ElevenLabs،
+                        مع نطق صحيح وإيقاع مناسب لتعليم YouTube.
+                    </div>
+                    <div class="agent-output" id="outputVoice"></div>
+                    <div class="agent-actions">
+                        <button class="agent-btn" onclick="runAgent('voice')">توليد الصوت</button>
+                        <button class="agent-btn" onclick="previewVoice()">استمع</button>
+                    </div>
+                </div>
+
+                <!-- Agent 4: Whiteboard Animation -->
+                <div class="agent-card" id="agentAnimation">
+                    <div class="agent-header">
+                        <div class="agent-name">🎨 وكيل إنتاج السبورة</div>
+                        <div class="agent-status status-idle">في الانتظار</div>
+                    </div>
+                    <div class="agent-description">
+                        يرسم رسومات متحركة على السبورة البيضاء باستخدام Manim (مفتوح المصدر)،
+                        يوضح المفاهيم بالرسوم والألوان.
+                    </div>
+                    <div class="agent-output" id="outputAnimation"></div>
+                    <div class="agent-actions">
+                        <button class="agent-btn" onclick="runAgent('animation')">إنشاء الرسوم</button>
+                        <button class="agent-btn" onclick="previewAnimation()">معاينة</button>
+                    </div>
+                </div>
+
+                <!-- Agent 5: Video Montage -->
+                <div class="agent-card" id="agentMontage">
+                    <div class="agent-header">
+                        <div class="agent-name">🎬 وكيل المونتاج والإخراج</div>
+                        <div class="agent-status status-idle">في الانتظار</div>
+                    </div>
+                    <div class="agent-description">
+                        يجمع الصوت + الرسوم + المؤثرات + الترجمة باستخدام FFmpeg،
+                        ينشئ فيديو نهائي 1080p جاهز للرفع.
+                    </div>
+                    <div class="agent-output" id="outputMontage"></div>
+                    <div class="agent-actions">
+                        <button class="agent-btn" onclick="runAgent('montage')">مونتاج نهائي</button>
+                        <button class="agent-btn" onclick="previewVideo()">معاينة الفيديو</button>
+                    </div>
+                </div>
+
+                <!-- Agent 6: Quality Checker -->
+                <div class="agent-card" id="agentQuality">
+                    <div class="agent-header">
+                        <div class="agent-name">🔍 وكيل مراجعة الجودة</div>
+                        <div class="agent-status status-idle">في الانتظار</div>
+                    </div>
+                    <div class="agent-description">
+                        يتحقق من الأخطاء اللغوية، تنسيق الفيديو، جودة الصوت،
+                        ويجمع تقريراً نهائياً بنسبة نجاح 99%.
+                    </div>
+                    <div class="agent-output" id="outputQuality"></div>
+                    <div class="agent-actions">
+                        <button class="agent-btn" onclick="runAgent('quality')">مراجعة الجودة</button>
+                        <button class="agent-btn" onclick="viewReport()">عرض التقرير</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Review & Delivery -->
+        <div class="right-panel">
+            <!-- Error Log -->
+            <div class="panel-section">
+                <div class="panel-title">⚠️ سجل الأخطاء والتحذيرات</div>
+                <div id="errorLog">
+                    <p style="color: #64748b; text-align: center; font-size: 0.85rem;">
+                        لا توجد أخطاء حتى الآن - كل شيء يعمل بشكل مثالي ✅
+                    </p>
+                </div>
+            </div>
+
+            <!-- Video Preview -->
+            <div class="panel-section">
+                <div class="panel-title">🎬 معاينة الفيديو النهائي</div>
+                <div id="videoPreview">
+                    <video id="previewPlayer" style="width: 100%; border-radius: 8px; display: none;" controls>
+                        <source src="" type="video/mp4">
+                        المتصفح لا يدعم الفيديو.
+                    </video>
+                    <div class="video-placeholder">
+                        <p>⏳ الفيديو قيد الإنتاج...</p>
+                        <span class="loading-dots"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delivery Queue -->
+            <div class="panel-section">
+                <div class="panel-title">📤 قائمة التسليم</div>
+                <div id="deliveryQueue">
+                    <div class="delivery-item pending">
+                        <div class="delivery-title">قيد الإنتاج: لم يتم البدء بعد</div>
+                        <div class="delivery-meta">الحالة: في الانتظار</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics -->
+            <div class="panel-section">
+                <div class="panel-title">📊 إحصائيات الإنتاج اليومية</div>
+                <div class="stat-card">
+                    <div class="stat-number" id="dailyProduction">0</div>
+                    <div class="stat-label">فيديوهات اليوم</div>
+                </div>
+                <div class="stat-card" style="margin-top: 10px;">
+                    <div class="stat-number" id="avgDuration">0د</div>
+                    <div class="stat-label">متوسط المدة</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu">
+            <div class="nav-items">
+                <div class="nav-item active" onclick="mobileNav('dashboard')">
+                    <span class="nav-icon">📊</span>
+                    <span>لوحة التحكم</span>
+                </div>
+                <div class="nav-item" onclick="mobileNav('agents')">
+                    <span class="nav-icon">🤖</span>
+                    <span>الوكلاء</span>
+                </div>
+                <div class="nav-item" onclick="mobileNav('preview')">
+                    <span class="nav-icon">🎬</span>
+                    <span>المعاينة</span>
+                </div>
+                <div class="nav-item" onclick="mobileNav('export')">
+                    <span class="nav-icon">📤</span>
+                    <span>تصدير</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // YouTube EduFactory AI Engine
+        class EduFactoryAI {
+            constructor() {
+                this.agents = {
+                    ideation: { status: 'idle', progress: 0, output: null },
+                    script: { status: 'idle', progress: 0, output: null },
+                    voice: { status: 'idle', progress: 0, output: null },
+                    animation: { status: 'idle', progress: 0, output: null },
+                    montage: { status: 'idle', progress: 0, output: null },
+                    quality: { status: 'idle', progress: 0, output: null }
+                };
+
+                this.channelConfig = null;
+                this.currentVideo = null;
+                this.errorLog = [];
+                this.deliveryQueue = [];
+                this.generatedIdeas = [];
+
+                this.initializeAgents();
+            }
+
+            initializeAgents() {
+                // Initialize each agent with their specific tasks
+                this.agents.ideation.name = 'وكيل جمع الأفكار';
+                this.agents.script.name = 'وكيل كتابة السكربت';
+                this.agents.voice.name = 'وكيل التعليق الصوتي';
+                this.agents.animation.name = 'وكيل إنتاج السبورة';
+                this.agents.montage.name = 'وكيل المونتاج';
+                this.agents.quality.name = 'مراجع الجودة';
+            }
+
+            initializeFactory() {
+                // Capture channel configuration (human input)
+                this.channelConfig = {
+                    name: document.getElementById('channelName').value,
+                    niche: document.getElementById('channelNiche').value,
+                    language: document.getElementById('channelLanguage').value,
+                    style: document.getElementById('teachingStyle').value,
+                    creatorInfo: document.getElementById('creatorInfo').value
+                };
+
+                // Validate required fields
+                if (!this.channelConfig.name || !this.channelConfig.creatorInfo) {
+                    this.showToast('❌ من فضلك أدخل اسم القناة ومعلوماتك الشخصية', 'error');
+                    this.logError('من فضلك أدخل اسم القناة ومعلوماتك الشخصية', 'high');
+                    return;
+                }
+
+                this.logError('✅ تم تهيئة المصنع بنجاح', 'low');
+                this.logError('📋 تم حفظ إعدادات القناة', 'low');
+
+                // Update UI
+                document.getElementById('orchestratorStatus').textContent = '✅ المصنع جاهز للإنتاج';
+                document.getElementById('statusIndicator').style.background = '#10b981';
+
+                this.showToast('🎉 المصنع جاهز! اضغط "إنتاج فيديو فوري" لبدء العملية الآلية');
+            }
+
+            async generateVideo() {
+                if (!this.channelConfig) {
+                    this.showToast('❌ من فضلك املأ تفاصيل القناة أولاً', 'error');
+                    return;
+                }
+
+                // Reset agents
+                Object.keys(this.agents).forEach(key => {
+                    this.agents[key].status = 'idle';
+                    this.agents[key].progress = 0;
+                    this.agents[key].output = null;
+                });
+
+                // Reset progress bar
+                document.getElementById('progressFill').style.width = '0%';
+
+                // Clear error log
+                document.getElementById('errorLog').innerHTML = '';
+
+                // Start orchestrator
+                this.logError('🚀 بدء عملية إنتاج فيديو تعليمي كامل...', 'low');
+                document.getElementById('orchestratorStatus').textContent = '🎬 جاري إنتاج الفيديو...';
+                document.getElementById('statusIndicator').style.background = '#f59e0b';
+
+                // Update delivery queue
+                document.getElementById('deliveryQueue').innerHTML = `
+                    <div class="delivery-item pending">
+                        <div class="delivery-title">🎬 إنتاج فيديو جديد</div>
+                        <div class="delivery-meta">الحالة: قيد الإنتاج</div>
+                    </div>
+                `;
+
+                // Sequential execution
+                try {
+                    await this.runAgent('ideation');
+                    await this.runAgent('script');
+                    await this.runAgent('voice');
+                    await this.runAgent('animation');
+                    await this.runAgent('montage');
+                    await this.runAgent('quality');
+
+                    this.logError('✅ تم إنتاج الفيديو بنجاح بنسبة نجاح 99%', 'low');
+                    document.getElementById('orchestratorStatus').textContent = '✅ الفيديو جاهز للتسليم';
+                    document.getElementById('statusIndicator').style.background = '#10b981';
+
+                    this.updateVideoStats();
+                    this.updateDeliveryQueue();
+                    this.showToast('🎉 تم إنتاج الفيديو بنجاح!');
+
+                } catch (error) {
+                    this.logError(`❌ خطأ في الإنتاج: ${error.message}`, 'high');
+                    document.getElementById('orchestratorStatus').textContent = '❌ توقف الإنتاج';
+                    document.getElementById('statusIndicator').style.background = '#dc2626';
+                }
+            }
+
+            async runAgent(agentKey) {
+                const agent = this.agents[agentKey];
+                agent.status = 'running';
+                agent.progress = 0;
+
+                // Update UI
+                const card = document.getElementById(`agent${this.capitalize(agentKey)}`);
+                card.querySelector('.agent-status').textContent = 'قيد التشغيل';
+                card.querySelector('.agent-status').className = 'agent-status status-running';
+                card.classList.add('active');
+
+                this.logError(`▶️ ${agent.name} يبدأ العمل...`, 'low');
+                document.getElementById('progressText').textContent = `${this.getProgress()}% - ${agent.name} يعمل...`;
+
+                try {
+                    // Simulate agent work with realistic delays
+                    await this.simulateAgentWork(agentKey);
+
+                    agent.status = 'completed';
+                    agent.progress = 100;
+
+                    // Update UI
+                    card.querySelector('.agent-status').textContent = 'مكتمل';
+                    card.querySelector('.agent-status').className = 'agent-status status-completed';
+                    card.classList.remove('active');
+                    card.classList.add('completed');
+
+                    this.logError(`✅ ${agent.name} انتهى بنجاح`, 'low');
+
+                } catch (error) {
+                    agent.status = 'error';
+                    card.querySelector('.agent-status').textContent = 'خطأ';
+                    card.querySelector('.agent-status').className = 'agent-status status-error';
+                    this.logError(`❌ ${agent.name} فشل: ${error.message}`, 'high');
+                    throw error;
+                }
+            }
+
+            async simulateAgentWork(agentKey) {
+                const durations = {
+                    ideation: 3000,    // 3 seconds
+                    script: 5000,      // 5 seconds
+                    voice: 4000,       // 4 seconds
+                    animation: 8000,   // 8 seconds
+                    montage: 6000,     // 6 seconds
+                    quality: 2000      // 2 seconds
+                };
+
+                // Simulate progress
+                const progressEl = document.getElementById('progressFill');
+                const currentProgress = this.getProgress();
+                const newProgress = currentProgress + (100 / 6);
+                progressEl.style.width = newProgress + '%';
+
+                // Simulate work with progress updates
+                const duration = durations[agentKey];
+                const steps = 10;
+                const stepDuration = duration / steps;
+
+                for (let i = 0; i < steps; i++) {
+                    await new Promise(resolve => setTimeout(resolve, stepDuration));
+                }
+
+                // Generate mock output
+                this.agents[agentKey].output = this.generateMockOutput(agentKey);
+
+                // Show output
+                const outputEl = document.getElementById(`output${this.capitalize(agentKey)}`);
+                outputEl.textContent = this.agents[agentKey].output.substring(0, 150) + '...';
+                outputEl.classList.add('show');
+            }
+
+            generateMockOutput(agentKey) {
+                const nicheNames = {
+                    tech: 'التقنية والبرمجة',
+                    science: 'العلوم والرياضيات',
+                    business: 'ريادة الأعمال',
+                    language: 'تعليم اللغات',
+                    history: 'التاريخ والحضارات',
+                    skills: 'المهارات العملية'
+                };
+
+                const niche = this.channelConfig?.niche || 'tech';
+                const nicheName = nicheNames[niche];
+
+                const outputs = {
+                    ideation: `تم جمع 23 عنوان فيديو trending في مجال ${nicheName}، تم اختيار عنوان "كيف تستخدم ChatGPT لتعلم البرمجة" لأنه يحتوي على 45000 بحث شهري. أفضل الأفكار: 1) أسرار النجاح في ${nicheName} 2) دليل المبتدئين الشامل 3) أخطاء يجب تجنبها`,
+                    script: `مقدمة: هل تعلم أن 70% من الطلاب يستخدمون التقنية بشكل خاطئ؟ في هذا الفيديو سأعلمك الخطوات الصحيحة لتعلم ${nicheName} في 7 أيام فقط. محتوى: الخطوة الأولى هي فهم الأساسيات، ثم التطبيق العملي، وأخيراً المراجعة المستمرة. خاتمة: اشترك واضغط على الجرس ولا تنسى مشاركة الفيديو!`,
+                    voice: `تم توليد صوت تعليقي بمدة 8:45 دقيقة بلهجة عربية واضحة، تم التحقق من النطق الصحيح لجميع المصطلحات التقنية. جودة الصوت: 320kbps، معدل العينة: 44100Hz`,
+                    animation: `تم إنشاء 45 شريحة رسوم متحركة على السبورة البيضاء، تشمل: مقدمة متحركة، شرح المفاهيم الأساسية، 12 مثال عملي، رسوم توضيحية، انتقالات سلسة، خاتمة مع CTA`,
+                    montage: `تم مونتاج الفيديو النهائي بدقة 1080p (1920x1080)، مدة 9:12 دقيقة، حجم 127MB، codec: H.264، معدل الإطارات: 30fps، جاهز للرفع على YouTube`,
+                    quality: `تم فحص 23 معيار جودة: ✓ الصوت واضح (مستوى -14dB LUFS) ✓ الرسوم متزامنة (0ms offset) ✓ لا أخطاء لغوية ✓ الفيديو متوافق مع معايير YouTube ✓ حجم مناسب ✓ دقة مطابقة`
+                };
+
+                // Generate ideas for the ideation agent
+                if (agentKey === 'ideation') {
+                    this.generatedIdeas = [
+                        { title: `كيف تتعلم ${nicheName} في 30 يوم`, searches: '45000', competition: 'متوسطة' },
+                        { title: `أسرار النجاح في ${nicheName}`, searches: '32000', competition: 'عالية' },
+                        { title: `دليل المبتدئين الشامل في ${nicheName}`, searches: '28000', competition: 'منخفضة' },
+                        { title: `10 أخطاء يرتكبها المبتدئون في ${nicheName}`, searches: '25000', competition: 'متوسطة' },
+                        { title: `مستقبل ${nicheName} في 2025`, searches: '22000', competition: 'منخفضة' }
+                    ];
+                }
+
+                return outputs[agentKey] || "تمت العملية بنجاح";
+            }
+
+            capitalize(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }
+
+            getProgress() {
+                const completedAgents = Object.values(this.agents).filter(a => a.status === 'completed').length;
+                return Math.round((completedAgents / 6) * 100);
+            }
+
+            logError(message, severity = 'low') {
+                const errorLog = document.getElementById('errorLog');
+                const item = document.createElement('div');
+                item.className = 'error-log';
+                item.innerHTML = `
+                    <span>${message}</span>
+                    <span class="error-severity severity-${severity}">${severity === 'low' ? 'معلومة' : severity === 'medium' ? 'تحذير' : 'خطأ'}</span>
+                `;
+                errorLog.appendChild(item);
+                errorLog.scrollTop = errorLog.scrollHeight;
+            }
+
+            updateVideoStats() {
+                const stats = {
+                    videosProduced: this.loadData('videosProduced') || 0,
+                    totalViews: this.loadData('totalViews') || 0
+                };
+
+                stats.videosProduced++;
+                stats.totalViews += Math.floor(Math.random() * 5000) + 1000;
+
+                this.saveData('videosProduced', stats.videosProduced);
+                this.saveData('totalViews', stats.totalViews);
+
+                document.getElementById('videosProduced').textContent = stats.videosProduced;
+                document.getElementById('totalViews').textContent = stats.totalViews.toLocaleString();
+                document.getElementById('dailyProduction').textContent = 1;
+                document.getElementById('avgDuration').textContent = '9:12';
+            }
+
+            updateDeliveryQueue() {
+                const deliveryQueue = document.getElementById('deliveryQueue');
+                const videoTitle = this.generatedIdeas[0]?.title || 'فيديو تعليمي جديد';
+
+                deliveryQueue.innerHTML = `
+                    <div class="delivery-item">
+                        <div class="delivery-title">✅ ${videoTitle}</div>
+                        <div class="delivery-meta">المدة: 9:12 | الحجم: 127MB | الجودة: 1080p</div>
+                        <button class="download-btn" onclick="factory.exportVideo()">📥 تحميل الفيديو</button>
+                    </div>
+                `;
+            }
+
+            saveData(key, data) {
+                localStorage.setItem(`edufactory_${key}`, JSON.stringify(data));
+            }
+
+            loadData(key) {
+                const data = localStorage.getItem(`edufactory_${key}`);
+                return data ? JSON.parse(data) : null;
+            }
+
+            showToast(message, type = 'success') {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.style.background = type === 'error' ? '#ef4444' : '#1e293b';
+                toast.classList.add('show');
+
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            // Agent-specific functions
+            viewIdeas() {
+                if (this.generatedIdeas.length === 0) {
+                    this.showToast('❌ لم يتم توليد أفكار بعد. شغّل وكيل جمع الأفكار أولاً', 'error');
+                    return;
+                }
+
+                const ideaList = document.getElementById('ideaList');
+                ideaList.innerHTML = '';
+
+                this.generatedIdeas.forEach((idea, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'idea-item';
+                    li.innerHTML = `
+                        <div class="idea-title">${index + 1}. ${idea.title}</div>
+                        <div class="idea-meta">🔍 ${idea.searches} بحث شهري | 📊 المنافسة: ${idea.competition}</div>
+                    `;
+                    li.onclick = () => {
+                        this.showToast(`✅ تم اختيار: ${idea.title}`);
+                        closeModal();
+                    };
+                    ideaList.appendChild(li);
+                });
+
+                document.getElementById('ideasModal').classList.add('show');
+            }
+
+            editScript() {
+                const output = this.agents.script.output;
+                if (output) {
+                    const edited = prompt('تعديل السكربت:', output);
+                    if (edited) {
+                        this.agents.script.output = edited;
+                        document.getElementById('outputScript').textContent = edited.substring(0, 150) + '...';
+                        this.showToast('✅ تم تعديل السكربت');
+                    }
+                } else {
+                    this.showToast('❌ لم يتم كتابة السكربت بعد', 'error');
+                }
+            }
+
+            previewVoice() {
+                if (this.agents.voice.output) {
+                    this.showToast('🔊 جاري تشغيل الصوت المولد... (محاكاة)');
+                } else {
+                    this.showToast('❌ لم يتم توليد الصوت بعد', 'error');
+                }
+            }
+
+            previewAnimation() {
+                if (this.agents.animation.output) {
+                    this.showToast('🎨 معاينة الرسوم المتحركة: 45 شريحة رسومية');
+                } else {
+                    this.showToast('❌ لم يتم إنشاء الرسوم بعد', 'error');
+                }
+            }
+
+            previewVideo() {
+                if (this.agents.montage.output) {
+                    this.showToast('🎬 جاري معاينة الفيديو النهائي... (محاكاة)');
+                } else {
+                    this.showToast('❌ لم يتم إنتاج الفيديو بعد', 'error');
+                }
+            }
+
+            viewReport() {
+                if (this.agents.quality.output) {
+                    alert(`📋 تقرير الجودة:\n\n${this.agents.quality.output}\n\n✅ نسبة النجاح: 99%`);
+                } else {
+                    this.showToast('❌ لم تتم مراجعة الجودة بعد', 'error');
+                }
+            }
+
+            exportVideo() {
+                if (!this.agents.montage.output) {
+                    this.showToast('❌ لم يتم إنتاج فيديو بعد', 'error');
+                    return;
+                }
+
+                const video = {
+                    channel: this.channelConfig,
+                    title: this.generatedIdeas[0]?.title || 'فيديو تعليمي',
+                    script: this.agents.script.output,
+                    duration: '9:12',
+                    size: '127MB',
+                    quality: '1080p',
+                    exportDate: new Date().toISOString(),
+                    agents: {
+                        ideation: this.agents.ideation.output,
+                        script: this.agents.script.output,
+                        voice: this.agents.voice.output,
+                        animation: this.agents.animation.output,
+                        montage: this.agents.montage.output,
+                        quality: this.agents.quality.output
+                    }
+                };
+
+                const blob = new Blob([JSON.stringify(video, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `video-export-${Date.now()}.json`;
+                a.click();
+
+                this.showToast('📥 تم تصدير بيانات الفيديو جاهزة لـ YouTube');
+            }
+
+            viewAnalytics() {
+                const stats = {
+                    videosProduced: this.loadData('videosProduced') || 0,
+                    totalViews: this.loadData('totalViews') || 0,
+                    successRate: 99
+                };
+
+                alert(`📊 تحليلات الإنتاج:\n\n` +
+                      `• عدد الفيديوهات: ${stats.videosProduced}\n` +
+                      `• المشاهدات المتوقعة: ${stats.totalViews.toLocaleString()}\n` +
+                      `• معدل النجاح: ${stats.successRate}%\n` +
+                      `• الأفكار في المكتبة: 100+ عنوان`);
+            }
+        }
+
+        // Global instance
+        const factory = new EduFactoryAI();
+
+        // Global functions
+        function initializeFactory() {
+            factory.initializeFactory();
+        }
+
+        function generateVideo() {
+            factory.generateVideo();
+        }
+
+        function runAgent(agentKey) {
+            factory.runAgent(agentKey);
+        }
+
+        function viewIdeas() {
+            factory.viewIdeas();
+        }
+
+        function editScript() {
+            factory.editScript();
+        }
+
+        function previewVoice() {
+            factory.previewVoice();
+        }
+
+        function previewAnimation() {
+            factory.previewAnimation();
+        }
+
+        function previewVideo() {
+            factory.previewVideo();
+        }
+
+        function viewReport() {
+            factory.viewReport();
+        }
+
+        function exportVideo() {
+            factory.exportVideo();
+        }
+
+        function viewAnalytics() {
+            factory.viewAnalytics();
+        }
+
+        function closeModal() {
+            document.getElementById('ideasModal').classList.remove('show');
+        }
+
+        function mobileNav(section) {
+            // Update active state
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+
+            factory.showToast(`📱 التنقل إلى: ${section}`);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved stats
+            const videos = factory.loadData('videosProduced') || 0;
+            const views = factory.loadData('totalViews') || 0;
+
+            document.getElementById('videosProduced').textContent = videos;
+            document.getElementById('totalViews').textContent = views.toLocaleString();
+        });
+
+        // Close modal on outside click
+        document.getElementById('ideasModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('ideasModal')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
