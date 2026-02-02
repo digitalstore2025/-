@@ -1,90 +1,225 @@
-# Humanitarian Visual Execution System - Gaza Edition
+# 🟥 Humanitarian Visual System - Gaza Edition
 
-**المنظمة:** الهلال الأحمر التركي
-**الغرض:** عمل إنساني بحت - بلا أي محتوى سياسي أو عسكري
-
----
-
-## نظرة عامة | Overview
-
-نظام تنفيذ إعلامي تقني يعمل في بيئة حرب نشطة، مهمته إدارة التصوير، التوثيق، المعالجة، والأرشفة الإعلامية الإنسانية وفق أعلى المعايير الأخلاقية، القانونية، والتقنية.
-
-A technical media execution system operating in an active conflict environment, managing photography, documentation, processing, and humanitarian media archiving according to the highest ethical, legal, and technical standards.
+**نظام التوثيق البصري الإنساني | Full Stack: CLI + Ethics + Dashboard**
 
 ---
 
-## القيود المطلقة | Non-Negotiable Constraints
+## 📦 Quick Install | التثبيت السريع
 
-| # | القيد | Constraint |
-|---|-------|------------|
-| 1 | لا تصوير أو نشر يعرّض أي مستفيد للخطر | No photography or publishing that endangers any beneficiary |
-| 2 | لا إظهار وجوه في حالات النزوح، الصدمة، أو الأطفال دون موافقة | No faces shown during displacement, trauma, or children without consent |
-| 3 | لا تصوير جثامين مكشوفة أو إصابات مروّعة | No exposed bodies or graphic injuries |
-| 4 | لا تحديد مواقع حساسة | No sensitive location identification |
-| 5 | لا مؤثرات بصرية أو صوتية درامية | No dramatic visual or audio effects |
-| 6 | أي مادة تخالف الأخلاقيات تُستبعد تلقائيًا | Any unethical material is automatically excluded |
+```bash
+pip install humanitarian-visual
+```
+
+أو التثبيت من المصدر:
+```bash
+cd humanitarian-visual-system
+pip install -e .
+```
 
 ---
 
-## الهيكل | Structure
+## 🚀 Quick Start | البدء السريع
+
+```bash
+# Initialize mission | تهيئة البعثة
+hv init
+
+# Import file | استيراد ملف
+hv import IMG_001.CR2
+
+# Review file | مراجعة الملف
+hv review IMG_001.CR2
+
+# Approve file | الموافقة
+hv approve IMG_001.CR2
+
+# Launch dashboard | تشغيل الواجهة
+hv dashboard
+```
+
+**⚠️ لا يمكن تجاوز المراحل — النظام يمنع ذلك برمجيًا**
+
+---
+
+## 🏗️ Architecture | البنية
 
 ```
 humanitarian-visual-system/
-├── core/                 # Python core modules
-│   ├── ethical_gate.py   # Ethical review system
-│   ├── file_manager.py   # File organization
-│   ├── metadata.py       # Metadata handling
-│   ├── caption_engine.py # Caption generation
-│   └── archive.py        # Legal archival
-├── config/               # Configuration files
-│   ├── camera_presets.yaml
-│   ├── ethical_rules.yaml
-│   └── export_settings.yaml
-├── templates/            # Output templates
-├── docs/                 # SOP documentation
-├── web/                  # Web interface
-├── cli/                  # Command line tools
-└── tests/                # Unit tests
+├── hv/                      # Main package
+│   ├── cli.py               # Command-line interface
+│   ├── ethical/             # Ethical automation
+│   │   ├── gate.py          # Decision gate | بوابة القرار
+│   │   ├── blur.py          # Face blur | طمس الوجوه
+│   │   └── metadata.py      # Metadata strip | إزالة البيانات
+│   ├── dashboard/           # Offline GUI
+│   │   └── app.py           # Streamlit interface
+│   ├── core/                # Core modules
+│   │   ├── files.py         # File management
+│   │   ├── captions.py      # Caption engine
+│   │   └── logger.py        # Activity logging
+│   └── config.yaml          # Configuration
+├── setup.py                 # pip installation
+├── requirements.txt         # Dependencies
+└── README.md
 ```
 
 ---
 
-## التثبيت | Installation
+## ① CLI Commands | أوامر سطر الأوامر
+
+| Command | Description | الوصف |
+|---------|-------------|-------|
+| `hv init` | Initialize mission structure | تهيئة هيكل البعثة |
+| `hv import <file>` | Import media file | استيراد ملف |
+| `hv review <file>` | Ethical review | مراجعة أخلاقية |
+| `hv blur <file>` | Auto-blur faces | طمس الوجوه |
+| `hv approve <file>` | Approve for use | الموافقة |
+| `hv reject <file>` | Reject file | رفض الملف |
+| `hv caption <file>` | Add caption | إضافة تعليق |
+| `hv archive [file]` | Archive approved files | أرشفة الملفات |
+| `hv status` | Show system status | عرض الحالة |
+| `hv dashboard` | Launch GUI | تشغيل الواجهة |
+
+---
+
+## ② Ethical Automation | الذكاء الأخلاقي التلقائي
+
+### A. Auto Face Blur | طمس الوجوه تلقائياً
+
+```python
+from hv.ethical.blur import blur_faces
+blur_faces("photo.jpg")
+```
+
+يُفعّل تلقائياً إذا: وجه ظاهر + لا توجد موافقة
+
+### B. Metadata Strip | إزالة البيانات الحساسة
+
+```python
+from hv.ethical.metadata import strip_metadata
+strip_metadata("photo.jpg")
+```
+
+يحذف:
+- GPS Coordinates | إحداثيات
+- Exact Timestamp | التوقيت الدقيق
+- Device ID | معرّف الجهاز
+
+### C. Ethical Gate | بوابة القرار الأخلاقي
+
+```python
+if face_detected and not consent:
+    blur_faces(file)
+if sensitive_metadata:
+    strip_metadata(file)
+if graphic_content:
+    reject(file)
+```
+
+**الأخلاق هنا قرار آلي لا يُناقش**
+
+---
+
+## ③ Dashboard | لوحة التحكم
 
 ```bash
-cd humanitarian-visual-system
-pip install -r requirements.txt
+hv dashboard
+# Opens: http://localhost:8501
+```
+
+**يعمل بدون إنترنت | Offline-First**
+
+### Features | المميزات:
+- 📥 Visual file import
+- 🔍 Auto ethical check
+- 🔲 One-click face blur
+- 📝 Caption templates
+- 📊 Activity monitoring
+- 🔐 Audit log
+
+---
+
+## 🔒 Non-Negotiable Rules | القواعد غير القابلة للتفاوض
+
+| # | القيد | Constraint |
+|---|-------|------------|
+| 1 | ❌ لا تصوير يعرّض المستفيد للخطر | No endangering beneficiaries |
+| 2 | ❌ لا وجوه بدون موافقة | No faces without consent |
+| 3 | ❌ لا جثامين أو إصابات صادمة | No graphic content |
+| 4 | ❌ لا تحديد مواقع حساسة | No sensitive locations |
+| 5 | ❌ لا مؤثرات درامية | No dramatic effects |
+| 6 | ❌ استبعاد تلقائي للمخالف | Auto-exclude unethical |
+
+---
+
+## 📝 Caption Template | قالب التعليق
+
+```
+ما الذي يحدث؟     What is happening?
+أين؟ (عام فقط)    Where? (general only)
+التدخل الإنساني:  Humanitarian intervention:
+الأثر:            Impact:
+```
+
+**ممنوع | Forbidden:**
+- ❌ توصيف سياسي | Political characterization
+- ❌ استعطاف | Emotional manipulation
+- ❌ مبالغة لغوية | Exaggeration
+
+---
+
+## 📊 Workflow | سير العمل
+
+```
+📥 Import
+    ↓
+🔍 Ethical Check (Auto)
+    ↓
+🔲 Blur/Strip (If needed)
+    ↓
+✓/✗ Approve/Reject
+    ↓
+📝 Caption
+    ↓
+📦 Archive
 ```
 
 ---
 
-## الاستخدام | Usage
+## 🔐 Security | الحماية
 
-### CLI للمصور الميداني | Field Photographer CLI
-```bash
-python cli/field_capture.py --mode daily --day 01
-```
+- ✓ لا مشاركة خارج النظام | No external sharing
+- ✓ لا تصدير بدون موافقة أخلاقية | No export without approval
+- ✓ سجل نشاط غير قابل للحذف | Immutable activity log
+- ✓ Hash-chained audit trail | سلسلة تدقيق مشفرة
 
-### المراجعة الأخلاقية | Ethical Review
-```bash
-python core/ethical_gate.py --input /path/to/media
-```
+---
 
-### الواجهة الويب | Web Interface
+## 🧠 What This System Is
+
+✅ نظام مساءلة أخلاقية مبرمج | Programmed ethical accountability
+✅ درع قانوني للمؤسسة | Legal shield for the organization
+✅ مساعد صامت للمصوّر في بيئة حرب | Silent assistant for photographers in conflict
+
+**This is NOT just a tool or editing software.**
+
+---
+
+## 📋 Requirements | المتطلبات
+
 ```bash
-python web/app.py
+pip install pillow opencv-python streamlit piexif pyyaml
 ```
 
 ---
 
-## الترخيص | License
+## 📄 License | الترخيص
 
-للاستخدام الإنساني فقط - الهلال الأحمر التركي
-For humanitarian use only - Turkish Red Crescent
+للاستخدام الإنساني فقط | For humanitarian use only
 
 ---
 
-## التواصل | Contact
+## 📞 Contact | التواصل
 
 فريق الإعلام - الهلال الأحمر التركي
 Media Team - Turkish Red Crescent

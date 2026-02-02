@@ -1,24 +1,53 @@
 # Humanitarian Visual System - Requirements
-# نظام التنفيذ البصري الإنساني - المتطلبات
+# نظام التوثيق البصري الإنساني - المتطلبات
+#
+# Install: pip install -r requirements.txt
+# التثبيت: pip install -r requirements.txt
 
-# Core dependencies
-pyyaml>=6.0           # Configuration file parsing
-pillow>=10.0          # Image processing
-python-dateutil>=2.8  # Date handling
+# ============================================
+# Core Dependencies | المتطلبات الأساسية
+# ============================================
+pillow>=9.0.0           # Image processing | معالجة الصور
+opencv-python>=4.5.0    # Face detection & blur | كشف وطمس الوجوه
+pyyaml>=6.0.0           # Configuration files | ملفات الإعدادات
+python-dateutil>=2.8.0  # Date handling | معالجة التواريخ
 
-# Optional: Enhanced metadata handling
-# exiftool              # External tool for EXIF manipulation
-# piexif>=1.1           # EXIF data manipulation
+# ============================================
+# Dashboard | لوحة التحكم
+# ============================================
+streamlit>=1.20.0       # Offline dashboard | لوحة تحكم بدون إنترنت
 
-# Optional: Video processing
-# ffmpeg-python>=0.2    # Video processing wrapper
-# moviepy>=1.0          # Video editing
+# ============================================
+# Enhanced Features | ميزات متقدمة
+# ============================================
+piexif>=1.1.3           # EXIF metadata manipulation | معالجة بيانات EXIF
 
-# Optional: Web interface
-# flask>=3.0            # Web framework
-# gunicorn>=21.0        # WSGI server
+# ============================================
+# Optional: Video Processing | معالجة الفيديو
+# ============================================
+# ffmpeg-python>=0.2.0  # FFmpeg wrapper (requires ffmpeg installed)
+# moviepy>=1.0.3        # Video editing
 
-# Development
-# pytest>=7.0           # Testing
-# black>=23.0           # Code formatting
-# mypy>=1.0             # Type checking
+# ============================================
+# Development | التطوير
+# ============================================
+# pytest>=7.0.0         # Testing
+# pytest-cov>=4.0.0     # Coverage
+# black>=23.0.0         # Code formatting
+# flake8>=6.0.0         # Linting
+# mypy>=1.0.0           # Type checking
+
+# ============================================
+# Notes | ملاحظات
+# ============================================
+# 1. opencv-python includes the Haar cascade for face detection
+#    opencv-python يتضمن Haar cascade لكشف الوجوه
+#
+# 2. For video metadata stripping, install ffmpeg:
+#    لإزالة بيانات الفيديو، ثبّت ffmpeg:
+#    - Ubuntu/Debian: sudo apt install ffmpeg
+#    - MacOS: brew install ffmpeg
+#    - Windows: Download from https://ffmpeg.org/
+#
+# 3. Streamlit runs offline - no internet required
+#    Streamlit يعمل بدون إنترنت
