@@ -1,0 +1,200 @@
+# Ethical Rules Configuration - Humanitarian Visual System
+# قواعد الأخلاقيات - نظام التنفيذ البصري الإنساني
+#
+# القيود المطلقة (Non-Negotiable)
+# هذه القواعد غير قابلة للتغيير أو التجاوز
+
+version: "1.0"
+organization: "Turkish Red Crescent | الهلال الأحمر التركي"
+purpose: "Humanitarian Documentation | التوثيق الإنساني"
+
+# ═══════════════════════════════════════════════════════════════
+# NON-NEGOTIABLE CONSTRAINTS | القيود المطلقة
+# ═══════════════════════════════════════════════════════════════
+
+non_negotiable:
+  - id: "NN-001"
+    rule_ar: "لا تصوير أو نشر يعرّض أي مستفيد للخطر"
+    rule_en: "No photography or publishing that endangers any beneficiary"
+    action: "IMMEDIATE_REJECT"
+    severity: "CRITICAL"
+
+  - id: "NN-002"
+    rule_ar: "لا إظهار وجوه في حالات النزوح، الصدمة، أو الأطفال دون موافقة واضحة"
+    rule_en: "No visible faces during displacement, trauma, or children without clear consent"
+    action: "REJECT_OR_REDACT"
+    severity: "CRITICAL"
+    conditions:
+      - "displacement_context"
+      - "trauma_visible"
+      - "subject_is_child"
+      - "consent_not_documented"
+
+  - id: "NN-003"
+    rule_ar: "لا تصوير جثامين مكشوفة أو إصابات مروّعة"
+    rule_en: "No exposed bodies or graphic injuries"
+    action: "IMMEDIATE_REJECT"
+    severity: "CRITICAL"
+
+  - id: "NN-004"
+    rule_ar: "لا تحديد مواقع حساسة (إحداثيات – معالم – توقيتات)"
+    rule_en: "No sensitive location identification (coordinates, landmarks, timings)"
+    action: "STRIP_METADATA"
+    severity: "CRITICAL"
+    includes:
+      - "gps_coordinates"
+      - "specific_landmarks"
+      - "facility_identifiers"
+      - "operation_timings"
+
+  - id: "NN-005"
+    rule_ar: "لا مؤثرات بصرية أو صوتية درامية"
+    rule_en: "No dramatic visual or audio effects"
+    action: "REJECT"
+    severity: "HIGH"
+    forbidden:
+      - "slow_motion_tragedy"
+      - "dramatic_music"
+      - "color_grading_manipulation"
+      - "artificial_vignetting"
+      - "emotional_sound_effects"
+
+  - id: "NN-006"
+    rule_ar: "أي مادة تخالف الأخلاقيات تُستبعد تلقائيًا"
+    rule_en: "Any unethical material is automatically excluded"
+    action: "AUTO_EXCLUDE"
+    severity: "CRITICAL"
+
+# ═══════════════════════════════════════════════════════════════
+# CONSENT REQUIREMENTS | متطلبات الموافقة
+# ═══════════════════════════════════════════════════════════════
+
+consent:
+  required_for:
+    - "identifiable_faces"
+    - "personal_stories"
+    - "medical_situations"
+    - "children_under_18"
+    - "vulnerable_persons"
+
+  documentation:
+    format: "written_or_recorded"
+    must_include:
+      - "date"
+      - "subject_acknowledgment"
+      - "purpose_explanation"
+      - "usage_scope"
+
+  exceptions:
+    - condition: "crowd_shot"
+      description: "Wide shots where individuals are not identifiable"
+    - condition: "hands_only"
+      description: "Detail shots showing only hands/items"
+    - condition: "back_to_camera"
+      description: "Subjects not facing camera"
+
+# ═══════════════════════════════════════════════════════════════
+# AUTOMATIC REVIEW FLAGS | علامات المراجعة التلقائية
+# ═══════════════════════════════════════════════════════════════
+
+auto_review_flags:
+  face_detection:
+    enabled: true
+    action: "FLAG_FOR_CONSENT_CHECK"
+
+  child_detection:
+    enabled: true
+    action: "REQUIRE_MANUAL_REVIEW"
+
+  graphic_content:
+    enabled: true
+    keywords:
+      - "blood"
+      - "injury"
+      - "body"
+      - "wound"
+    action: "IMMEDIATE_FLAG"
+
+  location_exposure:
+    enabled: true
+    checks:
+      - "gps_metadata"
+      - "landmark_recognition"
+      - "text_in_image"
+    action: "STRIP_AND_REVIEW"
+
+# ═══════════════════════════════════════════════════════════════
+# APPROVAL WORKFLOW | سير عمل الموافقة
+# ═══════════════════════════════════════════════════════════════
+
+approval_workflow:
+  stages:
+    - stage: 1
+      name: "Automated Screening"
+      name_ar: "الفحص التلقائي"
+      actions:
+        - "metadata_sanitization"
+        - "face_detection"
+        - "graphic_content_scan"
+
+    - stage: 2
+      name: "Human Review"
+      name_ar: "المراجعة البشرية"
+      required_for:
+        - "flagged_content"
+        - "identifiable_subjects"
+        - "sensitive_contexts"
+
+    - stage: 3
+      name: "Final Approval"
+      name_ar: "الموافقة النهائية"
+      approver: "senior_media_officer"
+      required_for:
+        - "public_release"
+        - "official_reports"
+        - "donor_communications"
+
+# ═══════════════════════════════════════════════════════════════
+# ALLOWED GENERAL LOCATIONS | المواقع العامة المسموحة
+# ═══════════════════════════════════════════════════════════════
+
+allowed_locations:
+  - "غزة | Gaza"
+  - "شمال غزة | Northern Gaza"
+  - "جنوب غزة | Southern Gaza"
+  - "وسط غزة | Central Gaza"
+  - "رفح | Rafah"
+  - "خان يونس | Khan Yunis"
+  - "دير البلح | Deir al-Balah"
+
+# Never allowed
+forbidden_location_details:
+  - "exact_coordinates"
+  - "street_names"
+  - "building_numbers"
+  - "facility_names"
+  - "checkpoint_locations"
+  - "shelter_addresses"
+
+# ═══════════════════════════════════════════════════════════════
+# PUBLISHING RESTRICTIONS | قيود النشر
+# ═══════════════════════════════════════════════════════════════
+
+publishing:
+  safe_publishing_protocol:
+    rule_ar: "لا نشر مباشر من الميدان"
+    rule_en: "No live/direct publishing from field"
+
+  restrictions:
+    - "no_raw_sharing"
+    - "no_sensitive_metadata"
+    - "no_location_tagging"
+    - "no_real_time_posts"
+
+  delay_conditions:
+    - condition: "security_risk_high"
+      action: "DELAY_PUBLISHING"
+    - condition: "operation_ongoing"
+      action: "HOLD_UNTIL_COMPLETE"
+
+  approved_channels_only: true
