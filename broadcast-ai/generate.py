@@ -85,16 +85,27 @@ def generate_voice(
         "loudnorm=I=-16:LRA=11:TP=-1.5"
     )
 
-    subprocess.run(
-        [
-            "ffmpeg", "-y",
-            "-i", raw_path,
-            "-af", af_chain,
-            final_path,
-        ],
-        check=True,
-        capture_output=True,
-    )
+    try:
+        subprocess.run(
+            [
+                "ffmpeg", "-y",
+                "-i", raw_path,
+                "-af", af_chain,
+                final_path,
+            ],
+            check=True,
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"[WARN] ffmpeg post-processing failed: {e}")
+        print(f"[WARN] Using raw audio output instead")
+        # If ffmpeg fails, use the raw audio file
+        final_path = raw_path
+    except FileNotFoundError:
+        print(f"[WARN] ffmpeg not found - skipping audio post-processing")
+        print(f"[WARN] Using raw audio output instead")
+        # If ffmpeg is not installed, use the raw audio file
+        final_path = raw_path
 
     print(f"[GEN] {style} → {final_path}")
     return final_path

@@ -56,20 +56,25 @@ def _ensure_anchor_video():
         return
 
     os.makedirs("input", exist_ok=True)
-    subprocess.run(
-        [
-            "ffmpeg", "-y",
-            "-loop", "1",
-            "-i", anchor_img,
-            "-c:v", "libx264",
-            "-t", "15",
-            "-pix_fmt", "yuv420p",
-            ANCHOR_VIDEO,
-        ],
-        check=True,
-        capture_output=True,
-    )
-    print(f"[ANCHOR] Created {ANCHOR_VIDEO}")
+    try:
+        subprocess.run(
+            [
+                "ffmpeg", "-y",
+                "-loop", "1",
+                "-i", anchor_img,
+                "-c:v", "libx264",
+                "-t", "15",
+                "-pix_fmt", "yuv420p",
+                ANCHOR_VIDEO,
+            ],
+            check=True,
+            capture_output=True,
+        )
+        print(f"[ANCHOR] Created {ANCHOR_VIDEO}")
+    except subprocess.CalledProcessError as e:
+        print(f"[ERROR] Failed to create anchor video: {e}")
+    except FileNotFoundError:
+        print(f"[ERROR] ffmpeg not found - cannot create anchor video")
 
 
 def _generate_segment(headline: str) -> str | None:
@@ -85,18 +90,27 @@ def _generate_segment(headline: str) -> str | None:
         print("[WARN] Wav2Lip checkpoint not found — skipping lip-sync")
         return audio_path
 
-    subprocess.run(
-        [
-            "python", WAV2LIP_INFERENCE,
-            "--checkpoint_path", WAV2LIP_CHECKPOINT,
-            "--face", ANCHOR_VIDEO,
-            "--audio", audio_path,
-            "--outfile", VIDEO_OUTPUT,
-        ],
-        check=True,
-    )
-
-    return VIDEO_OUTPUT
+    try:
+        subprocess.run(
+            [
+                "python", WAV2LIP_INFERENCE,
+                "--checkpoint_path", WAV2LIP_CHECKPOINT,
+                "--face", ANCHOR_VIDEO,
+                "--audio", audio_path,
+                "--outfile", VIDEO_OUTPUT,
+            ],
+            check=True,
+            capture_output=True,
+        )
+        return VIDEO_OUTPUT
+    except subprocess.CalledProcessError as e:
+        print(f"[WARN] Wav2Lip processing failed: {e}")
+        print(f"[WARN] Falling back to audio only")
+        return audio_path
+    except FileNotFoundError:
+        print(f"[WARN] Python interpreter or Wav2Lip script not found")
+        print(f"[WARN] Falling back to audio only")
+        return audio_path
 
 
 # ---------------------------------------------------------------------------
@@ -119,8 +133,14 @@ def run():
             result = _generate_segment(headline)
             if result:
                 print(f"[TV] Segment ready: {result}")
+            else:
+                print(f"[TV] Segment generation returned no result")
+        except KeyboardInterrupt:
+            print("[TV] Shutting down broadcast loop")
+            break
         except Exception as exc:
-            print(f"[TV] Segment failed: {exc}")
+            print(f"[TV] Unexpected error during segment generation: {exc}")
+            print(f"[TV] Continuing to next segment...")
 
         time.sleep(LOOP_PAUSE_SECONDS)
 
