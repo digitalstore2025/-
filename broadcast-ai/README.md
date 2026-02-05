@@ -1,283 +1,149 @@
-# Quran-Conditioned Palestinian AI Broadcast System
+# Palestinian AI Voice Broadcasting Platform
 
-Complete end-to-end pipeline for broadcast-grade Arabic text-to-speech (TTS) with Palestinian dialect support, conditioned on Quranic recitation patterns for authentic pronunciation.
+## What This Does
 
-## 🎯 Overview
+This platform creates authentic Arabic speech for broadcasting, trained specifically on Palestinian dialect and Quranic pronunciation patterns. It combines multiple voice datasets to produce natural-sounding news announcements and can generate synchronized video content.
 
-This system provides:
+## Getting Started
 
-- **Fine-tuned XTTS v2 model** trained on multiple Arabic datasets (Quran, news, Palestinian dialect, realistic speech, authority statements)
-- **Broadcast-grade audio processing** with EBU R128 loudness normalization
-- **Lip-synced video generation** using Wav2Lip
-- **Live streaming server** with web-based player
-- **Continuous TV channel loop** for automated broadcast
+**Hardware needed:**
+- Computer with Python 3.8 or newer
+- At least 8 GB memory (more is better for model training)
+- Optional: NVIDIA GPU makes training much faster
 
-## 📋 System Requirements
+**Installation steps:**
 
-- Python 3.8+
-- FFmpeg
-- 8GB+ RAM (16GB recommended for training)
-- CUDA-capable GPU (optional but highly recommended for training)
-
-## 🚀 Quick Start
-
-### 1. Setup
-
-Run the automated setup script:
-
+Execute the setup automation:
 ```bash
-cd broadcast-ai
 ./setup.sh
 ```
 
-This will:
-- Install system dependencies (ffmpeg)
-- Install Python packages from `requirements.txt`
-- Create all necessary directory structures
+The script handles ffmpeg installation and Python package configuration automatically.
 
-### 2. Prepare Datasets
+## How To Use This System
 
-Add your audio files and metadata to the dataset directories:
+### Step 1: Collect Voice Data
 
-```
-dataset_quran/
-  wavs/
-    001001.wav
-    001002.wav
-    ...
-  metadata.csv
+Your audio samples go into six specialized folders. Each needs a `metadata.csv` file mapping audio filenames to their Arabic transcriptions using pipe delimiter format: `audiofile.wav|النص العربي`
 
-dataset_speaker/
-  wavs/
-    0001.wav
-    0002.wav
-    ...
-  metadata.csv
+Reference the `.csv.example` files in each folder to see the expected format.
 
-dataset_speaker_news/
-  wavs/
-    news_001.wav
-    ...
-  metadata.csv
+**The six dataset categories:**
+- `dataset_quran` → Quranic verses with proper tajweed
+- `dataset_speaker` → General broadcaster voice samples  
+- `dataset_speaker_news` → Formal news presentation style
+- `dataset_speaker_palestinian` → Authentic Palestinian colloquial speech
+- `dataset_speaker_realistic` → Natural conversational patterns
+- `dataset_authority` → Official statement delivery style
 
-dataset_speaker_palestinian/
-  wavs/
-    pal_001.wav
-    ...
-  metadata.csv
+### Step 2: Build Your Model
 
-dataset_speaker_realistic/
-  wavs/
-    real_001.wav
-    ...
-  metadata.csv
-
-dataset_authority/
-  wavs/
-    auth_001.wav
-    ...
-  metadata.csv
-```
-
-**Metadata Format** (`metadata.csv`):
-
-```
-filename.wav|Arabic text transcription
-```
-
-See `*.csv.example` files in each dataset directory for examples.
-
-### 3. Train the Model
-
-Merge all datasets and fine-tune XTTS v2:
-
+Run the training process:
 ```bash
 python train.py
 ```
 
-This will:
-1. Merge all datasets into `dataset_merged/`
-2. Fine-tune XTTS v2 on the combined dataset
-3. Save the model to `models/final_broadcast_model/`
+The trainer consolidates all your datasets and adapts the XTTS v2 foundation model. Output goes to `models/final_broadcast_model/`. Expect this to take time - possibly hours based on your dataset size and hardware.
 
-**Note**: Training can take several hours depending on your hardware and dataset size.
+### Step 3: Create Audio Content
 
-### 4. Generate Voice
-
-Test voice generation:
-
+Generate test audio:
 ```bash
 python generate.py
 ```
 
-This generates a demo audio file at `output/demo.wav` with broadcast-grade processing:
-- High-pass filter at 80 Hz (removes rumble)
-- Low-pass filter at 8000 Hz (removes hiss)
-- EBU R128 loudness normalization (-16 LUFS)
+The system produces `output/demo.wav` with professional audio treatment including frequency filtering and broadcast loudness standards (EBU R128 at -16 LUFS target).
 
-### 5. Run TV Channel (Optional)
+### Step 4: Launch Broadcasting (Optional)
 
-For continuous broadcast with lip-synced video:
+To enable video with lip synchronization, you need the Wav2Lip tool installed and an anchor presenter image at `input/anchor.jpg`.
 
-**Prerequisites**:
-- Clone and setup [Wav2Lip](https://github.com/Rudrabha/Wav2Lip)
-- Download the Wav2Lip checkpoint to `models/wav2lip.pth`
-- Place an anchor image at `input/anchor.jpg`
-
-**Run**:
-
+Start the broadcast generator:
 ```bash
-# Terminal 1 - Generate segments
-python run_tv_channel.py
+python run_tv_channel.py &
+```
 
-# Terminal 2 - Start web server
+Start the web interface:
+```bash
 python tv_server.py
 ```
 
-Access the live stream at `http://localhost:3000`
+View output at localhost port 3000.
 
-## 📁 Project Structure
+## Programming Interface
 
-```
-broadcast-ai/
-├── train.py                    # Training script
-├── generate.py                 # Voice generation
-├── run_tv_channel.py          # TV channel loop
-├── tv_server.py               # Flask streaming server
-├── setup.sh                   # Setup script
-├── requirements.txt           # Python dependencies
-├── .gitignore                 # Git ignore rules
-│
-├── dataset_quran/             # Quranic recitations
-├── dataset_speaker/           # Base speaker samples
-├── dataset_speaker_news/      # News-style speech
-├── dataset_speaker_palestinian/  # Palestinian dialect
-├── dataset_speaker_realistic/ # Realistic conversational
-├── dataset_authority/         # Authority statements
-│
-├── models/                    # Trained models
-│   └── final_broadcast_model/ # Fine-tuned XTTS v2
-│
-├── input/                     # Input media (anchor image/video)
-├── output/                    # Generated audio/video
-└── dataset_merged/            # Merged dataset (auto-generated)
-```
-
-## 🎙️ Voice Generation API
+Import the voice generation function:
 
 ```python
 from generate import generate_voice
 
-# Generate speech
-audio_path = generate_voice(
-    text="هنا غزة، من إذاعة صوت القدس. نوافيكم بآخر الأخبار.",
+generated_file = generate_voice(
+    text="نص عربي هنا",
     style="news",
-    output_name="my_audio.wav"
+    output_name="output_filename.wav"
 )
 ```
 
-**Parameters**:
-- `text`: Arabic text to synthesize
-- `style`: Style hint (reserved for future use)
-- `output_name`: Output filename in `output/` directory
+The function returns the path to your generated audio file.
 
-## 🌐 Web Server Routes
+## File Organization
 
-- `/` - HTML player page (RTL Arabic interface)
-- `/stream` - Direct video/audio stream
-- `/health` - JSON health check endpoint
+- `train.py` → Dataset merging and model fine-tuning
+- `generate.py` → Speech synthesis with audio processing  
+- `run_tv_channel.py` → Automated segment generation loop
+- `tv_server.py` → HTTP streaming endpoint (Flask-based)
+- `requirements.txt` → Python dependencies list
+- `setup.sh` → Automated environment configuration
 
-## 📊 Dataset Guidelines
+Generated content appears in `output/`, trained models in `models/`, source recordings in `dataset_*/wavs/`.
 
-For best results:
+## Audio Quality Tips
 
-1. **Audio Quality**: 
-   - 16kHz+ sample rate
-   - Clean, noise-free recordings
-   - Consistent volume levels
+**Recording standards:**
+- Sample at 16000 Hz minimum
+- Remove background noise before use
+- Normalize volume across all samples
+- Use consistent microphone setup
 
-2. **Dataset Balance**:
-   - Aim for 100+ samples per dataset
-   - Mix formal and informal speech
-   - Include various speaking styles
+**Dataset composition:**
+- Target 100+ recordings per category for good results
+- Balance formal and informal speaking styles
+- Mix different sentence structures and lengths
+- Include Arabic diacritics for Quran dataset accuracy
 
-3. **Transcription**:
-   - Use proper Arabic Unicode
-   - Include diacritics for Quran dataset
-   - Keep transcriptions accurate
+## Configuration Changes
 
-## 🔧 Customization
+**Switch reference voice:**
+Modify `REFERENCE_WAV` path in `generate.py` to point at your preferred sample.
 
-### Changing Reference Voice
+**Adjust audio filters:**
+Edit the `af_chain` variable in `generate.py` to customize frequency response and loudness targets.
 
-Edit `generate.py`:
+**Update news content:**
+Modify `NEWS_HEADLINES` array in `run_tv_channel.py` to change broadcast content pool.
 
-```python
-REFERENCE_WAV = "dataset_speaker/wavs/your_reference.wav"
-```
+## Common Issues
 
-### Adjusting Audio Processing
+**Training fails with memory error:**
+Your system needs more RAM or reduce the batch size parameter.
 
-Modify the FFmpeg filter chain in `generate.py`:
+**Cannot find model:**
+Complete the training step first before attempting generation.
 
-```python
-af_chain = (
-    "highpass=f=80,"
-    "lowpass=f=8000,"
-    "loudnorm=I=-16:LRA=11:TP=-1.5"
-)
-```
+**Video generation skips lip sync:**
+Verify Wav2Lip installation and checkpoint file presence at `models/wav2lip.pth`.
 
-### Adding News Headlines
+**FFmpeg command not found:**
+Install via your package manager (apt, brew, yum) or download from official site.
 
-Edit the `NEWS_HEADLINES` list in `run_tv_channel.py`:
+## Web Server Endpoints
 
-```python
-NEWS_HEADLINES = [
-    "Your custom headline 1",
-    "Your custom headline 2",
-    # ...
-]
-```
+- Root `/` serves the Arabic RTL player interface
+- `/stream` provides direct media access  
+- `/health` returns JSON status for monitoring
 
-## 🐛 Troubleshooting
+## Technical Notes
 
-### Model Not Found Error
+The system merges diverse Arabic speech patterns to capture authentic Palestinian broadcasting style while maintaining clear pronunciation through Quranic conditioning. Audio post-processing applies industry-standard loudness normalization suitable for broadcast transmission.
 
-Ensure you've run `python train.py` first to create the model.
-
-### FFmpeg Not Found
-
-Install FFmpeg:
-- Ubuntu/Debian: `sudo apt-get install ffmpeg`
-- macOS: `brew install ffmpeg`
-- Windows: Download from [ffmpeg.org](https://ffmpeg.org)
-
-### Out of Memory During Training
-
-Reduce batch size or use a machine with more RAM/GPU memory.
-
-### Wav2Lip Not Working
-
-Make sure:
-1. Wav2Lip is cloned in the same parent directory
-2. Checkpoint file exists at `models/wav2lip.pth`
-3. Anchor video exists at `input/anchor.mp4`
-
-## 📝 License
-
-This is an open-source project created for humanitarian and educational purposes.
-
-## 🙏 Acknowledgments
-
-- [Coqui TTS](https://github.com/coqui-ai/TTS) for XTTS v2
-- [Wav2Lip](https://github.com/Rudrabha/Wav2Lip) for lip-sync technology
-- The Palestinian people for their resilience and inspiration
-
-## 📞 Support
-
-For issues or questions, please open an issue in the repository.
-
----
-
-**صوت القدس — Voice of Jerusalem** 🇵🇸
+Model training adapts the multilingual XTTS v2 architecture with your custom Arabic datasets. The generator uses your reference voice sample to guide prosody and timbre during synthesis.
