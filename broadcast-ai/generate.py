@@ -96,15 +96,11 @@ def generate_voice(
             check=True,
             capture_output=True,
         )
-    except subprocess.CalledProcessError as e:
-        print(f"[WARN] ffmpeg post-processing failed: {e}")
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        error_type = "not found" if isinstance(e, FileNotFoundError) else "failed"
+        print(f"[WARN] ffmpeg {error_type} - skipping audio post-processing")
         print(f"[WARN] Using raw audio output instead")
-        # If ffmpeg fails, use the raw audio file
-        final_path = raw_path
-    except FileNotFoundError:
-        print(f"[WARN] ffmpeg not found - skipping audio post-processing")
-        print(f"[WARN] Using raw audio output instead")
-        # If ffmpeg is not installed, use the raw audio file
+        # If ffmpeg fails or is not installed, use the raw audio file
         final_path = raw_path
 
     print(f"[GEN] {style} → {final_path}")

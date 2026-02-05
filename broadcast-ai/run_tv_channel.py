@@ -100,7 +100,6 @@ def _generate_segment(headline: str) -> str | None:
                 "--outfile", VIDEO_OUTPUT,
             ],
             check=True,
-            capture_output=True,
         )
         return VIDEO_OUTPUT
     except subprocess.CalledProcessError as e:
@@ -133,14 +132,12 @@ def run():
             result = _generate_segment(headline)
             if result:
                 print(f"[TV] Segment ready: {result}")
-            else:
-                print(f"[TV] Segment generation returned no result")
         except KeyboardInterrupt:
             print("[TV] Shutting down broadcast loop")
             break
         except Exception as exc:
-            print(f"[TV] Unexpected error during segment generation: {exc}")
-            print(f"[TV] Continuing to next segment...")
+            print(f"[TV] Unexpected error during segment generation ({type(exc).__name__}): {exc}")
+            print("[TV] Continuing to next segment...")
 
         time.sleep(LOOP_PAUSE_SECONDS)
 
