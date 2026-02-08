@@ -14,8 +14,6 @@ import subprocess
 import sys
 import time
 
-from TTS.api import TTS
-
 import config
 from logger import get_logger
 
@@ -25,18 +23,39 @@ log = get_logger("generate")
 # Lazy-loaded TTS instance
 # ---------------------------------------------------------------------------
 
-_tts_instance: TTS | None = None
+_tts_instance = None
+_TTS_CLASS = None
 
 
-def _get_tts() -> TTS:
+def _import_tts():
+    """Lazy-import TTS to allow server to start without it."""
+    global _TTS_CLASS
+    if _TTS_CLASS is None:
+        try:
+            from TTS.api import TTS as _TTS
+            _TTS_CLASS = _TTS
+        except ImportError:
+            log.error("TTS package not installed. Run: pip3 install TTS==0.22.0")
+            raise RuntimeError("TTS package not available")
+    return _TTS_CLASS
+
+
+def _get_tts():
+    """Load the TTS model (lazy — only on first synthesis call)."""
     global _tts_instance
     if _tts_instance is None:
-        if not config.MODEL_PATH.exists():
-            log.error("Model not found at %s — run train.py first", config.MODEL_PATH)
-            sys.exit(1)
-        log.info("Loading TTS model from %s ...", config.MODEL_PATH)
+        TTS = _import_tts()
+
+        # Try fine-tuned model first, fall back to pre-trained
+        if config.MODEL_PATH.exists():
+            model_id = str(config.MODEL_PATH)
+            log.info("Loading fine-tuned model from %s ...", model_id)
+        else:
+            model_id = config.BASE_MODEL
+            log.info("Fine-tuned model not found. Using pre-trained: %s", model_id)
+
         t0 = time.time()
-        _tts_instance = TTS(str(config.MODEL_PATH))
+        _tts_instance = TTS(model_id)
         log.info("Model loaded in %.1fs", time.time() - t0)
     return _tts_instance
 
