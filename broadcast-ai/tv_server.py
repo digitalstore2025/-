@@ -390,7 +390,7 @@ def api_generate():
     """On-demand TTS generation via API.
 
     POST JSON: {"text": "...", "style": "news"}
-    Returns: {"success": true, "data": {"path": "...", "duration": ..., "style": "..."}}
+    Returns JSON: {"success": true/false, "data": {...}} or {"success": false, "error": "..."}
     """
     data = request.get_json(silent=True)
     if not data or "text" not in data:
