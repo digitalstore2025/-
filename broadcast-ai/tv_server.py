@@ -390,11 +390,11 @@ def api_generate():
     """On-demand TTS generation via API.
 
     POST JSON: {"text": "...", "style": "news"}
-    Returns: {"path": "...", "duration": ...}
+    Returns JSON: {"success": true/false, "data": {...}} or {"success": false, "error": "..."}
     """
     data = request.get_json(silent=True)
     if not data or "text" not in data:
-        return jsonify({"error": "Missing 'text' field"}), 400
+        return jsonify({"success": False, "error": "Missing 'text' field"}), 400
 
     text = data["text"]
     style = data.get("style", "news")
@@ -402,16 +402,16 @@ def api_generate():
 
     # Prevent path traversal
     if "/" in output_name or "\\" in output_name or ".." in output_name:
-        return jsonify({"error": "Invalid output name"}), 400
+        return jsonify({"success": False, "error": "Invalid output name"}), 400
 
     try:
         from generate import generate_voice
         t0 = time.time()
         path = generate_voice(text, style=style, output_name=output_name)
         duration = round(time.time() - t0, 1)
-        return jsonify({"path": path, "duration": duration, "style": style})
+        return jsonify({"success": True, "data": {"path": path, "duration": duration, "style": style}})
     except Exception as exc:
-        return jsonify({"error": str(exc)}), 500
+        return jsonify({"success": False, "error": str(exc)}), 500
 
 
 # ---------------------------------------------------------------------------
