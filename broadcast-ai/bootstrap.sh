@@ -55,7 +55,7 @@ echo ""
 echo "  Verifying installations..."
 python3 -c "import flask; print('  [OK] Flask')" 2>/dev/null || echo "  [!!] Flask missing"
 python3 -c "import torch; print('  [OK] PyTorch', torch.__version__)" 2>/dev/null || echo "  [!!] PyTorch missing"
-python3 -c "import TTS; print('  [OK] TTS')" 2>/dev/null || echo "  [!!] TTS missing"
+python3 -c "import TTS; print('  [OK] TTS')" 2>/dev/null || { echo "  [!!] TTS missing"; exit 1; }
 python3 -c "import atoma; print('  [OK] atoma (RSS)')" 2>/dev/null || echo "  [!!] atoma missing"
 
 # --- Step 3: Directory structure ---
