@@ -66,10 +66,12 @@ describe('MOCK_MARTYRS', () => {
     expect(categories.size).toBeGreaterThan(1);
   });
 
-  it('dateOfMartyrdom follows YYYY-MM-DD pattern', () => {
+  it('dateOfMartyrdom follows YYYY-MM-DD pattern and is not in the future', () => {
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+    const today = new Date().toISOString().slice(0, 10);
     MOCK_MARTYRS.forEach(m => {
       expect(m.dateOfMartyrdom).toMatch(datePattern);
+      expect(m.dateOfMartyrdom <= today).toBe(true);
     });
   });
 

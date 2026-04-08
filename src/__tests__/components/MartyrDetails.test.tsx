@@ -86,12 +86,14 @@ describe('MartyrDetails', () => {
 
   it('renders verification status badge', () => {
     render(<MartyrDetails martyr={martyrWithMedia} onClose={onClose} />);
-    expect(screen.getAllByText(VerificationStatus.VERIFIED).length).toBeGreaterThan(0);
+    // Status appears in both the sidebar badge and the gallery overlay badge
+    expect(screen.getAllByText(VerificationStatus.VERIFIED).length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders category badge', () => {
     render(<MartyrDetails martyr={martyrWithMedia} onClose={onClose} />);
-    expect(screen.getAllByText('طفل').length).toBeGreaterThan(0);
+    // Category appears in both the sidebar and the gallery overlay
+    expect(screen.getAllByText('طفل').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders dreams when present', () => {
