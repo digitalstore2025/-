@@ -55,7 +55,7 @@ echo "  [OK] Python packages installed"
 python3 -c "import TTS; print('  [OK] TTS', TTS.__version__)" 2>/dev/null || echo "  [!!] TTS import failed"
 python3 -c "import torch; print('  [OK] PyTorch', torch.__version__)" 2>/dev/null || echo "  [!!] PyTorch import failed"
 python3 -c "import flask; print('  [OK] Flask', flask.__version__)" 2>/dev/null || echo "  [!!] Flask import failed"
-python3 -c "import feedparser; print('  [OK] feedparser')" 2>/dev/null || echo "  [!!] feedparser import failed"
+python3 -c "import atoma; print('  [OK] atoma')" 2>/dev/null || echo "  [!!] atoma import failed"
 
 # --- Directory structure -----------------------------------------------------
 echo ""

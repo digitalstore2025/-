@@ -220,14 +220,36 @@ fetch('/api/episodes').then(r=>r.json()).then(data=>{
     el.innerHTML='<p class="status">لا توجد حلقات بعد. شغّل podcast_generator.py لإنشاء حلقات.</p>';
     return;
   }
-  let html='';
+  el.replaceChildren();
   data.episodes.forEach((ep,i)=>{
-    html+=`<div style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid #222">
-      <strong>حلقة ${i+1}</strong> — <span class="status">${ep.name}</span>
-      <audio controls style="width:100%;margin-top:0.5rem"><source src="/api/episode/${ep.name}" type="audio/wav"></audio>
-    </div>`;
+    const item=document.createElement('div');
+    item.style.marginBottom='1rem';
+    item.style.paddingBottom='1rem';
+    item.style.borderBottom='1px solid #222';
+
+    const title=document.createElement('strong');
+    title.textContent=`حلقة ${i+1}`;
+    item.appendChild(title);
+    item.appendChild(document.createTextNode(' — '));
+
+    const name=document.createElement('span');
+    name.className='status';
+    name.textContent=ep.name;
+    item.appendChild(name);
+
+    const audio=document.createElement('audio');
+    audio.controls=true;
+    audio.style.width='100%';
+    audio.style.marginTop='0.5rem';
+
+    const source=document.createElement('source');
+    source.src=`/api/episode/${encodeURIComponent(ep.name)}`;
+    source.type='audio/wav';
+    audio.appendChild(source);
+
+    item.appendChild(audio);
+    el.appendChild(item);
   });
-  el.innerHTML=html;
 }).catch(()=>{document.getElementById('episodes').innerHTML='<p class="status">خطأ في التحميل</p>';});
 </script>
 """)
@@ -410,8 +432,9 @@ def api_generate():
         path = generate_voice(text, style=style, output_name=output_name)
         duration = round(time.time() - t0, 1)
         return jsonify({"path": path, "duration": duration, "style": style})
-    except Exception as exc:
-        return jsonify({"error": str(exc)}), 500
+    except Exception:
+        log.exception("Unhandled error during /api/generate request")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 # ---------------------------------------------------------------------------
