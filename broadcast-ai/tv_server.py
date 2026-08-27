@@ -220,7 +220,7 @@ fetch('/api/episodes').then(r=>r.json()).then(data=>{
     el.innerHTML='<p class="status">لا توجد حلقات بعد. شغّل podcast_generator.py لإنشاء حلقات.</p>';
     return;
   }
-  el.innerHTML='';
+  el.replaceChildren();
   data.episodes.forEach((ep,i)=>{
     const row=document.createElement('div');
     row.style.marginBottom='1rem';
