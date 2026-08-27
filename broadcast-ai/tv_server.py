@@ -252,7 +252,13 @@ fetch('/api/episodes').then(r=>r.json()).then(data=>{
     row.appendChild(audio);
     el.appendChild(row);
   });
-}).catch(()=>{document.getElementById('episodes').innerHTML='<p class="status">خطأ في التحميل</p>';});
+}).catch(()=>{
+  const episodes=document.getElementById('episodes');
+  const error=document.createElement('p');
+  error.className='status';
+  error.textContent='خطأ في التحميل';
+  episodes.replaceChildren(error);
+});
 </script>
 """)
 
