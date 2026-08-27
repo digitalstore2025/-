@@ -225,9 +225,10 @@ fetch('/api/episodes').then(r=>r.json()).then(data=>{
   data.episodes.forEach((ep,i)=>{
     const safeName=escapeHtml(ep.name);
     const encodedName=encodeURIComponent(ep.name);
+    const safeEncodedName=escapeHtml(encodedName);
     html+=`<div style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid #222">
       <strong>حلقة ${i+1}</strong> — <span class="status">${safeName}</span>
-      <audio controls style="width:100%;margin-top:0.5rem"><source src="/api/episode/${encodedName}" type="audio/wav"></audio>
+      <audio controls style="width:100%;margin-top:0.5rem"><source src="/api/episode/${safeEncodedName}" type="audio/wav"></audio>
     </div>`;
   });
   el.innerHTML=html;
