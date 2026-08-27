@@ -411,7 +411,8 @@ def api_generate():
         duration = round(time.time() - t0, 1)
         return jsonify({"path": path, "duration": duration, "style": style})
     except Exception as exc:
-        return jsonify({"error": str(exc)}), 500
+        log.exception("Error generating API voice output: %s", exc)
+        return jsonify({"error": "Internal server error"}), 500
 
 
 # ---------------------------------------------------------------------------
