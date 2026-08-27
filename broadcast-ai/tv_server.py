@@ -215,6 +215,7 @@ def podcasts_page():
 </div>
 <script>
 fetch('/api/episodes').then(r=>r.json()).then(data=>{
+  const escapeHtml=(s)=>String(s).replace(/[&<>"']/g,(c)=>({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   const el=document.getElementById('episodes');
   if(!data.episodes||data.episodes.length===0){
     el.innerHTML='<p class="status">لا توجد حلقات بعد. شغّل podcast_generator.py لإنشاء حلقات.</p>';
@@ -222,9 +223,11 @@ fetch('/api/episodes').then(r=>r.json()).then(data=>{
   }
   let html='';
   data.episodes.forEach((ep,i)=>{
+    const safeName=escapeHtml(ep.name);
+    const encodedName=encodeURIComponent(ep.name);
     html+=`<div style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid #222">
-      <strong>حلقة ${i+1}</strong> — <span class="status">${ep.name}</span>
-      <audio controls style="width:100%;margin-top:0.5rem"><source src="/api/episode/${ep.name}" type="audio/wav"></audio>
+      <strong>حلقة ${i+1}</strong> — <span class="status">${safeName}</span>
+      <audio controls style="width:100%;margin-top:0.5rem"><source src="/api/episode/${encodedName}" type="audio/wav"></audio>
     </div>`;
   });
   el.innerHTML=html;
