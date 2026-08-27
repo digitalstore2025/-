@@ -220,14 +220,38 @@ fetch('/api/episodes').then(r=>r.json()).then(data=>{
     el.innerHTML='<p class="status">لا توجد حلقات بعد. شغّل podcast_generator.py لإنشاء حلقات.</p>';
     return;
   }
-  let html='';
+  el.innerHTML='';
   data.episodes.forEach((ep,i)=>{
-    html+=`<div style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid #222">
-      <strong>حلقة ${i+1}</strong> — <span class="status">${ep.name}</span>
-      <audio controls style="width:100%;margin-top:0.5rem"><source src="/api/episode/${ep.name}" type="audio/wav"></audio>
-    </div>`;
+    const row=document.createElement('div');
+    row.style.marginBottom='1rem';
+    row.style.paddingBottom='1rem';
+    row.style.borderBottom='1px solid #222';
+
+    const title=document.createElement('strong');
+    title.textContent=`حلقة ${i+1}`;
+
+    const dash=document.createTextNode(' — ');
+
+    const name=document.createElement('span');
+    name.className='status';
+    name.textContent=ep.name;
+
+    const audio=document.createElement('audio');
+    audio.controls=true;
+    audio.style.width='100%';
+    audio.style.marginTop='0.5rem';
+
+    const source=document.createElement('source');
+    source.src=`/api/episode/${encodeURIComponent(ep.name)}`;
+    source.type='audio/wav';
+    audio.appendChild(source);
+
+    row.appendChild(title);
+    row.appendChild(dash);
+    row.appendChild(name);
+    row.appendChild(audio);
+    el.appendChild(row);
   });
-  el.innerHTML=html;
 }).catch(()=>{document.getElementById('episodes').innerHTML='<p class="status">خطأ في التحميل</p>';});
 </script>
 """)
