@@ -222,19 +222,20 @@ fetch('/api/episodes').then(r=>r.json()).then(data=>{
   }
   el.replaceChildren();
   data.episodes.forEach((ep,i)=>{
-    const row=document.createElement('div');
-    row.style.marginBottom='1rem';
-    row.style.paddingBottom='1rem';
-    row.style.borderBottom='1px solid #222';
+    const item=document.createElement('div');
+    item.style.marginBottom='1rem';
+    item.style.paddingBottom='1rem';
+    item.style.borderBottom='1px solid #222';
 
     const title=document.createElement('strong');
     title.textContent=`حلقة ${i+1}`;
-
-    const dash=document.createTextNode(' — ');
+    item.appendChild(title);
+    item.appendChild(document.createTextNode(' — '));
 
     const name=document.createElement('span');
     name.className='status';
     name.textContent=ep.name;
+    item.appendChild(name);
 
     const audio=document.createElement('audio');
     audio.controls=true;
@@ -246,11 +247,8 @@ fetch('/api/episodes').then(r=>r.json()).then(data=>{
     source.type='audio/wav';
     audio.appendChild(source);
 
-    row.appendChild(title);
-    row.appendChild(dash);
-    row.appendChild(name);
-    row.appendChild(audio);
-    el.appendChild(row);
+    item.appendChild(audio);
+    el.appendChild(item);
   });
 }).catch(()=>{
   const episodes=document.getElementById('episodes');
